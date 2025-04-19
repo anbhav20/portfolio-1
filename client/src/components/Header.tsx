@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import ThemeToggle from './ThemeToggle';
 
 interface NavItem {
   id: string;
@@ -65,7 +66,7 @@ const Header = () => {
   }, []); // Empty dependency array means this runs once on mount
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-sm z-40 shadow-md">
+    <header className="fixed top-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm z-40 shadow-md transition-colors">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <a 
           href="#" 
@@ -76,17 +77,17 @@ const Header = () => {
           }}
           data-aos="fade-down"
         >
-          Abhishek<span className="text-gray-700">.dev</span>
+          Abhishek<span className="text-gray-700 dark:text-gray-400">.dev</span>
         </a>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex space-x-8" data-aos="fade-down" data-aos-delay="300">
+        <nav className="hidden md:flex items-center space-x-8" data-aos="fade-down" data-aos-delay="300">
           {navItems.map((item) => (
             <a
               key={item.id}
               href={`#${item.id}`}
-              className={`text-gray-700 hover:text-blue-600 transition-colors ${
-                activeSection === item.id ? 'text-blue-600 font-medium' : ''
+              className={`text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${
+                activeSection === item.id ? 'text-blue-600 dark:text-blue-400 font-medium' : ''
               }`}
               onClick={(e) => {
                 e.preventDefault();
@@ -98,34 +99,43 @@ const Header = () => {
           ))}
           <a
             href="/assets/Abhishek_Resume.pdf"
-            className="text-gray-700 hover:text-blue-600 transition-colors"
+            className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >
             CV
           </a>
+          
+          {/* Theme Toggle */}
+          <ThemeToggle />
         </nav>
         
-        {/* Mobile Navigation Toggle */}
-        <button 
-          className="md:hidden text-gray-700 hover:text-blue-600 transition-colors"
-          onClick={toggleMobileMenu}
-          data-aos="fade-down"
-          aria-label="Toggle navigation menu"
-        >
-          <i className="fas fa-bars text-xl"></i>
-        </button>
+        {/* Mobile Navigation and Theme Controls */}
+        <div className="flex items-center space-x-4 md:hidden">
+          {/* Theme Toggle for Mobile */}
+          <ThemeToggle />
+          
+          {/* Mobile Navigation Toggle */}
+          <button 
+            className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            onClick={toggleMobileMenu}
+            data-aos="fade-down"
+            aria-label="Toggle navigation menu"
+          >
+            <i className="fas fa-bars text-xl"></i>
+          </button>
+        </div>
       </div>
       
       {/* Mobile Navigation Menu */}
-      <div className={`${mobileMenuOpen ? 'block' : 'hidden'} md:hidden bg-white shadow-md`}>
+      <div className={`${mobileMenuOpen ? 'block' : 'hidden'} md:hidden bg-white dark:bg-gray-900 shadow-md transition-colors`}>
         <div className="container mx-auto px-4 py-2 flex flex-col space-y-3">
           {navItems.map((item) => (
             <a
               key={item.id}
               href={`#${item.id}`}
-              className={`text-gray-700 hover:text-blue-600 transition-colors py-2 ${
-                activeSection === item.id ? 'text-blue-600 font-medium' : ''
+              className={`text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 ${
+                activeSection === item.id ? 'text-blue-600 dark:text-blue-400 font-medium' : ''
               }`}
               onClick={(e) => {
                 e.preventDefault();
@@ -137,7 +147,7 @@ const Header = () => {
           ))}
           <a
             href="/assets/Abhishek_Resume.pdf"
-            className="text-gray-700 hover:text-blue-600 transition-colors py-2"
+            className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2"
             target="_blank"
             rel="noopener noreferrer"
           >

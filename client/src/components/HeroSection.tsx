@@ -59,15 +59,15 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <section id="about" className="min-h-screen flex items-center pt-20 bg-gradient-to-br from-blue-50 to-gray-50">
+    <section id="about" className="min-h-screen flex items-center pt-20 bg-gradient-to-br from-blue-50 to-gray-50 dark:from-gray-900 dark:to-gray-800 transition-colors">
       <div className="container mx-auto px-4 py-16">
         <div className="flex flex-col md:flex-row items-center justify-between">
           {/* Left: Text Content */}
           <div className="md:w-1/2 mb-12 md:mb-0" data-aos="fade-right">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800 dark:text-gray-100 transition-colors">
               {typedText}<span className="cursor">|</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-lg">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-lg transition-colors">
               "{profileData.bio}"
             </p>
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
@@ -78,14 +78,14 @@ const HeroSection: React.FC = () => {
                 View Projects
               </button>
               <button
-                className="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="px-6 py-3 border border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 onClick={() => scrollToSection('contact')}
               >
                 Contact Me
               </button>
               <a
                 href={profileData.cvPath}
-                className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors shadow-md text-center focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors shadow-md text-center focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => {
@@ -106,7 +106,7 @@ const HeroSection: React.FC = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-blue-500 rounded-full blur-lg opacity-20 animate-pulse"></div>
               {/* Profile image with fallback */}
-              <div className="w-64 h-64 rounded-full relative border-4 border-white overflow-hidden shadow-xl">
+              <div className="w-64 h-64 rounded-full relative border-4 border-white dark:border-gray-700 overflow-hidden shadow-xl transition-colors">
                 {/* If profile image exists, display it - otherwise show placeholder */}
                 <img 
                   src={profileData.profileImage} 
@@ -117,9 +117,9 @@ const HeroSection: React.FC = () => {
                     e.currentTarget.style.display = 'none';
                     const parent = e.currentTarget.parentNode;
                     if (parent) {
-                      (parent as HTMLElement).classList.add('bg-gray-300', 'flex', 'items-center', 'justify-center');
+                      (parent as HTMLElement).classList.add('bg-gray-300', 'dark:bg-gray-700', 'flex', 'items-center', 'justify-center');
                       const initial = document.createElement('span');
-                      initial.className = 'text-2xl font-bold text-gray-600';
+                      initial.className = 'text-2xl font-bold text-gray-600 dark:text-gray-300';
                       initial.textContent = profileData.name.charAt(0);
                       parent.appendChild(initial);
                     }
