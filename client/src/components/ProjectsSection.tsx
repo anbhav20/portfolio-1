@@ -29,8 +29,8 @@ const projects: Project[] = [
     title: "Personal Portfolio Website",
     description: "A modern React portfolio showcasing projects and skills with smooth animations and theme switching.",
     imageUrl: "/assets/images/projects/portfolio.jpg",
-    link: "#",
-    sourceCodeLink: "https://github.com/yourusername/ecommerce-dashboard",
+    link: "https://portfolio-1-a01n.onrender.com",
+    sourceCodeLink: "https://github.com/anbhav20/portfolio-1",
     tags: ["React", "TypeScript", "Vite", "Tailwind CSS", "Shadcn","Radix UI", "Node.js", "Express.js", "Wouter", "AOS","Zod", "React Hook Form", "Nodemailer"],
     delay: 200
   },
