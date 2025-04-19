@@ -183,7 +183,7 @@ const ContactSection: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mr-4">
-                    <i className="fas fa-envelope"></i>
+                    <i className="fas fa-envelope text-xl"></i>
                   </div>
                   <a href="mailto:spidey.9449@gmail.com" className="text-gray-700 hover:text-blue-600 transition-colors">
                     spidey.9449@gmail.com
@@ -192,7 +192,7 @@ const ContactSection: React.FC = () => {
                 
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mr-4">
-                    <i className="fas fa-map-marker-alt"></i>
+                    <i className="fas fa-map-marker-alt text-xl"></i>
                   </div>
                   <span className="text-gray-700">Bengaluru, India</span>
                 </div>
@@ -208,24 +208,27 @@ const ContactSection: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer" 
                   className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-colors"
+                  aria-label="LinkedIn Profile"
                 >
-                  <i className="fab fa-linkedin-in"></i>
+                  <i className="fab fa-linkedin-in text-xl"></i>
                 </a>
                 <a 
                   href="https://github.com/anbhav20" 
                   target="_blank"
                   rel="noopener noreferrer" 
                   className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-colors"
+                  aria-label="GitHub Profile"
                 >
-                  <i className="fab fa-github"></i>
+                  <i className="fab fa-github text-xl"></i>
                 </a>
                 <a 
                   href="https://www.instagram.com/__anbhav" 
                   target="_blank"
                   rel="noopener noreferrer" 
                   className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-colors"
+                  aria-label="Instagram Profile"
                 >
-                  <i className="fab fa-instagram"></i>
+                  <i className="fab fa-instagram text-xl"></i>
                 </a>
                 
                 {/* CV Download */}
@@ -233,9 +236,10 @@ const ContactSection: React.FC = () => {
                   href="/assets/Abhishek_Resume.pdf" 
                   target="_blank"
                   rel="noopener noreferrer" 
-                  className="w-auto px-4 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-colors"
+                  className="w-auto px-4 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-md"
+                  aria-label="Download CV"
                 >
-                  <i className="fas fa-file-alt mr-2"></i> Download CV
+                  <i className="fas fa-file-alt mr-2 text-lg"></i> Download CV
                 </a>
               </div>
             </div>
