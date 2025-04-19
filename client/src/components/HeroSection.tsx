@@ -72,22 +72,29 @@ const HeroSection: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
               <button
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 onClick={() => scrollToSection('projects')}
               >
                 View Projects
               </button>
               <button
-                className="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                className="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 onClick={() => scrollToSection('contact')}
               >
                 Contact Me
               </button>
               <a
                 href={profileData.cvPath}
-                className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors shadow-md text-center"
+                className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors shadow-md text-center focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => {
+                  // This prevents the default behavior if the CV isn't yet available
+                  // Once you add your actual CV file, remove this event handler
+                  if (!window.confirm('This will download your CV once you add it to the assets folder. Proceed?')) {
+                    e.preventDefault();
+                  }
+                }}
               >
                 Download CV
               </a>

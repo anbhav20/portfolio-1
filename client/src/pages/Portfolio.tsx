@@ -25,27 +25,51 @@ const portfolioStyles = `
 
 const Portfolio = () => {
   const [animationComplete, setAnimationComplete] = useState(false);
+  const [skipAnimation, setSkipAnimation] = useState(false);
+  
+  // Function to skip animation
+  const handleSkip = () => {
+    setSkipAnimation(true);
+    setAnimationComplete(true);
+  };
   
   useEffect(() => {
-    // Calculate total animation time:
-    // 2.5s door animation + 2.6s delay before typing starts + ~2s for typing/erasing
-    const doorAnimation = 2500;
-    const typingStartDelay = 2600;
-    const typingDuration = 2000;
-    const safetyBuffer = 500;
+    // Allow users to press Escape key to skip animation
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleSkip();
+      }
+    };
     
-    // Total time before showing main content (with a buffer for safety)
-    const totalAnimationTime = doorAnimation + typingStartDelay + typingDuration + safetyBuffer;
+    window.addEventListener('keydown', handleKeyDown);
     
-    // Set a timeout to match the full animation sequence
-    const timer = setTimeout(() => {
-      setAnimationComplete(true);
-    }, totalAnimationTime); 
+    // If not skipped, set timer for automatic completion
+    if (!skipAnimation) {
+      // Calculate total animation time:
+      // 2.5s door animation + 2.6s delay before typing starts + ~2s for typing/erasing
+      const doorAnimation = 2500;
+      const typingStartDelay = 2600;
+      const typingDuration = 2000;
+      const safetyBuffer = 500;
+      
+      // Total time before showing main content (with a buffer for safety)
+      const totalAnimationTime = doorAnimation + typingStartDelay + typingDuration + safetyBuffer;
+      
+      // Set a timeout to match the full animation sequence
+      const timer = setTimeout(() => {
+        setAnimationComplete(true);
+      }, totalAnimationTime); 
+      
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
     
     return () => {
-      clearTimeout(timer);
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [skipAnimation]);
 
   // Add the CSS to the document
   useEffect(() => {
@@ -60,12 +84,23 @@ const Portfolio = () => {
 
   return (
     <>
-      <EntranceAnimation />
+      {!skipAnimation && !animationComplete && (
+        <>
+          <EntranceAnimation />
+          <button 
+            onClick={handleSkip}
+            className="fixed bottom-4 right-4 bg-white/80 backdrop-blur-sm text-gray-700 px-4 py-2 rounded-md shadow-md z-[100] hover:bg-white/90 transition-colors"
+          >
+            Skip Animation
+          </button>
+        </>
+      )}
       
       <main 
-        className={`relative opacity-0 ${animationComplete ? 'animate-fade-in' : ''}`}
+        className={`relative ${!animationComplete ? 'opacity-0' : 'opacity-100'}`}
         style={{
           animation: animationComplete ? 'mainFadeIn 1s ease forwards' : 'none',
+          pointerEvents: animationComplete ? 'auto' : 'none', // Enable interaction only when animation is complete
         }}
       >
         <Header />
