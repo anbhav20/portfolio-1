@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface NavItem {
   id: string;
@@ -39,7 +39,7 @@ const Header = () => {
   };
 
   // Add scroll event listener to update active section based on scroll position
-  useState(() => {
+  useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 100; // Offset for better UX
 
@@ -57,8 +57,12 @@ const Header = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
+    // Call once to set initial active section
+    handleScroll();
+    
+    // Clean up event listener on component unmount
     return () => window.removeEventListener('scroll', handleScroll);
-  });
+  }, []); // Empty dependency array means this runs once on mount
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-sm z-40 shadow-md">

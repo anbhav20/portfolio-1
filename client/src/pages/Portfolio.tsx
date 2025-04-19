@@ -27,10 +27,20 @@ const Portfolio = () => {
   const [animationComplete, setAnimationComplete] = useState(false);
   
   useEffect(() => {
-    // Set a timeout to match the animation duration (4.5s) from the CSS
+    // Calculate total animation time:
+    // 2.5s door animation + 2.6s delay before typing starts + ~2s for typing/erasing
+    const doorAnimation = 2500;
+    const typingStartDelay = 2600;
+    const typingDuration = 2000;
+    const safetyBuffer = 500;
+    
+    // Total time before showing main content (with a buffer for safety)
+    const totalAnimationTime = doorAnimation + typingStartDelay + typingDuration + safetyBuffer;
+    
+    // Set a timeout to match the full animation sequence
     const timer = setTimeout(() => {
       setAnimationComplete(true);
-    }, 4500); // Match the animation-delay in the CSS
+    }, totalAnimationTime); 
     
     return () => {
       clearTimeout(timer);
