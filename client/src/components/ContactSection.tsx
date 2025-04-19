@@ -108,34 +108,34 @@ const ContactSection: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-20 bg-white">
+    <section id="contact" className="py-20 bg-white dark:bg-gray-900 transition-colors">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-16 relative" data-aos="fade-up">
+        <h2 className="text-3xl font-bold text-center mb-16 relative text-gray-800 dark:text-gray-100 transition-colors" data-aos="fade-up">
           Get In Touch
           <div className="absolute w-20 h-1 bg-blue-500 bottom-0 left-1/2 transform -translate-x-1/2 mt-2"></div>
         </h2>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <div className="bg-gray-50 p-8 rounded-xl shadow-md" data-aos="fade-right">
+          <div className="bg-gray-50 dark:bg-gray-800 p-8 rounded-xl shadow-md" data-aos="fade-right">
             {submitSuccess && (
-              <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
+              <div className="mb-4 p-3 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-md">
                 Thank you for your message! I'll get back to you soon.
               </div>
             )}
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Your Name</label>
                 <input 
                   type="text" 
                   id="name" 
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                  className={`w-full px-4 py-2 border ${errors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                 />
-                {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+                {errors.name && <p className="mt-1 text-sm text-red-500 dark:text-red-400">{errors.name}</p>}
               </div>
               
               <div>

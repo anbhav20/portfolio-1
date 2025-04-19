@@ -76,9 +76,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
               e.currentTarget.style.display = 'none';
               const parent = e.currentTarget.parentNode;
               if (parent) {
-                (parent as HTMLElement).classList.add('bg-gray-200', 'flex', 'items-center', 'justify-center');
+                (parent as HTMLElement).classList.add('bg-gray-200', 'dark:bg-gray-700', 'flex', 'items-center', 'justify-center');
                 const initial = document.createElement('span');
-                initial.className = 'text-2xl font-bold text-gray-600';
+                initial.className = 'text-2xl font-bold text-gray-600 dark:text-gray-300';
                 initial.textContent = project.title.charAt(0);
                 parent.appendChild(initial);
               }
@@ -88,16 +88,16 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
         
         {/* Project Details */}
         <div className="p-6">
-          <h3 className="text-2xl font-bold mb-3">{project.title}</h3>
-          <p className="text-gray-600 mb-6">{project.description}</p>
+          <h3 className="text-2xl font-bold mb-3 text-gray-800 dark:text-gray-100">{project.title}</h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">{project.description}</p>
           
           <div className="mb-6">
-            <h4 className="text-lg font-semibold mb-2">Technologies Used:</h4>
+            <h4 className="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">Technologies Used:</h4>
             <div className="flex flex-wrap gap-2">
               {project.tags.map((tag, index) => (
                 <span 
                   key={index}
-                  className="text-sm py-1 px-3 bg-blue-100 text-blue-700 rounded-full"
+                  className="text-sm py-1 px-3 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded-full"
                 >
                   {tag}
                 </span>
@@ -197,7 +197,7 @@ const ProjectsSection: React.FC = () => {
                         if (parent) {
                           (parent as HTMLElement).classList.add('flex', 'items-center', 'justify-center');
                           const titleSpan = document.createElement('span');
-                          titleSpan.className = 'text-gray-600 font-medium px-4 text-center';
+                          titleSpan.className = 'text-gray-600 dark:text-gray-300 font-medium px-4 text-center';
                           titleSpan.textContent = project.title;
                           parent.appendChild(titleSpan);
                         }
@@ -216,7 +216,7 @@ const ProjectsSection: React.FC = () => {
                         if (parent) {
                           (parent as HTMLElement).classList.add('flex', 'items-center', 'justify-center');
                           const titleSpan = document.createElement('span');
-                          titleSpan.className = 'text-gray-600 font-medium px-4 text-center';
+                          titleSpan.className = 'text-gray-600 dark:text-gray-300 font-medium px-4 text-center';
                           titleSpan.textContent = project.title;
                           parent.appendChild(titleSpan);
                         }
