@@ -19,24 +19,25 @@ const projects: Project[] = [
     description: "Search for movies, get recommendations using ML, view trailers, and check OTT availability.",
     imageUrl: "/assets/images/projects/movie-recommendation.jpg", // Place image in client/public/assets/images/projects/
     link: "https://movie-recommendation-ml-4ixm.onrender.com",
-    sourceCodeLink: "https://github.com/yourusername/movie-recommendation",
-    tags: ["React", "ML", "API"],
+    sourceCodeLink: "https://github.com/anbhav20/Movie-Recommendation-ML-2",
+    tags: [  "Flask","Python","JavaScript","Tailwind CSS","TMDB API","Machine Learning" ],
+    
     delay: 0
   },
   {
     id: 2,
-    title: "E-Commerce Dashboard",
-    description: "A responsive admin dashboard for managing an online store with real-time data visualization.",
-    imageUrl: "/assets/images/projects/ecommerce-dashboard.jpg",
+    title: "Personal Portfolio Website",
+    description: "A modern React portfolio showcasing projects and skills with smooth animations and theme switching.",
+    imageUrl: "/assets/images/projects/portfolio.jpg",
     link: "#",
     sourceCodeLink: "https://github.com/yourusername/ecommerce-dashboard",
-    tags: ["React", "Chart.js", "Firebase"],
+    tags: ["React", "TypeScript", "Vite", "Tailwind CSS", "Shadcn","Radix UI", "Node.js", "Express.js", "Wouter", "AOS","Zod", "React Hook Form", "Nodemailer"],
     delay: 200
   },
   {
     id: 3,
-    title: "Task Management App",
-    description: "A feature-rich task manager with categories, priorities, and deadline reminders.",
+    title: "CompusConnect(it'll be coming soon)",
+    description: "A feature-rich MERN web app for Indian college students that brings together real-time chat, college‑specific groups, nearby peer discovery, and a verified job/internship board.",
     imageUrl: "/assets/images/projects/task-manager.jpg",
     link: "#",
     sourceCodeLink: "https://github.com/yourusername/task-manager",

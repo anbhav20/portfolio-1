@@ -194,7 +194,7 @@ const ContactSection: React.FC = () => {
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mr-4">
                     <i className="fas fa-map-marker-alt text-xl"></i>
                   </div>
-                  <span className="text-gray-700">Bengaluru, India</span>
+                  <span className="text-gray-700">New Delhi, India</span>
                 </div>
               </div>
             </div>
@@ -233,7 +233,7 @@ const ContactSection: React.FC = () => {
                 
                 {/* CV Download */}
                 <a 
-                  href="/assets/Abhishek_Resume.pdf" 
+                  href="/assets/AbhishekCV.pdf" 
                   target="_blank"
                   rel="noopener noreferrer" 
                   className="w-auto px-4 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-md"

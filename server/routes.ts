@@ -1,7 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-
+import nodemailer from "nodemailer";  
+import dotenv from "dotenv";   
+dotenv.config();  
 interface ContactFormData {
   name: string;
   email: string;
@@ -27,6 +28,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // In a real application, you would save this to a database
       // or send an email using a service like SendGrid, Mailgun, etc.
+      // ── ✉️  Nodemailer setup & send ────────────────────────────────
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',                           // ya apni choice ka SMTP
+        auth: {
+          user: process.env.EMAIL_USER,             // set in .env
+          pass: process.env.EMAIL_PASS              // app password
+        }
+      });
+      const mailOptions = {
+        from: `"Portfolio Site" <${process.env.EMAIL_USER}>`,
+        to: process.env.EMAIL_USER,                // khud ko bhej rahe
+        subject: '📩 New Contact Form Submission',
+        text: `
+          Name: ${name}
+          Email: ${email}
+          Message: ${message}
+        `
+      };
+
+      await transporter.sendMail(mailOptions);     // yahi line mail bhej degi
+      // ── ✉️  End of email block ───
       
       // Simulate successful processing
       console.log('Contact form submission:', { name, email, message });

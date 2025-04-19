@@ -77,7 +77,7 @@ const Header = () => {
           }}
           data-aos="fade-down"
         >
-          Abhishek<span className="text-gray-700 dark:text-gray-400">.dev</span>
+          Abhishek <span className="text-gray-700 dark:text-gray-400">.dev</span>
         </a>
         
         {/* Desktop Navigation */}
@@ -98,7 +98,7 @@ const Header = () => {
             </a>
           ))}
           <a
-            href="/assets/Abhishek_Resume.pdf"
+            href="/assets/AbhishekCV.pdf"
             className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             target="_blank"
             rel="noopener noreferrer"
@@ -146,7 +146,7 @@ const Header = () => {
             </a>
           ))}
           <a
-            href="/assets/Abhishek_Resume.pdf"
+            href="/assets/AbhishekCV.pdf"
             className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2"
             target="_blank"
             rel="noopener noreferrer"
