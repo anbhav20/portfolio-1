@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface Project {
   id: number;
@@ -45,7 +45,99 @@ const projects: Project[] = [
   }
 ];
 
+// Project Modal Component
+interface ProjectModalProps {
+  project: Project | null;
+  onClose: () => void;
+}
+
+const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
+  if (!project) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70 p-4">
+      <div className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto relative" 
+           onClick={(e) => e.stopPropagation()}>
+        {/* Close Button */}
+        <button 
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 z-10"
+          onClick={onClose}
+        >
+          <i className="fas fa-times"></i>
+        </button>
+        
+        {/* Project Image */}
+        <div className="h-64 w-full overflow-hidden">
+          <img 
+            src={project.imageUrl} 
+            alt={project.title} 
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              const parent = e.currentTarget.parentNode;
+              if (parent) {
+                (parent as HTMLElement).classList.add('bg-gray-200', 'flex', 'items-center', 'justify-center');
+                const initial = document.createElement('span');
+                initial.className = 'text-2xl font-bold text-gray-600';
+                initial.textContent = project.title.charAt(0);
+                parent.appendChild(initial);
+              }
+            }}
+          />
+        </div>
+        
+        {/* Project Details */}
+        <div className="p-6">
+          <h3 className="text-2xl font-bold mb-3">{project.title}</h3>
+          <p className="text-gray-600 mb-6">{project.description}</p>
+          
+          <div className="mb-6">
+            <h4 className="text-lg font-semibold mb-2">Technologies Used:</h4>
+            <div className="flex flex-wrap gap-2">
+              {project.tags.map((tag, index) => (
+                <span 
+                  key={index}
+                  className="text-sm py-1 px-3 bg-blue-100 text-blue-700 rounded-full"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-3">
+            <a 
+              href={project.link} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <span className="flex items-center">
+                <i className="fas fa-external-link-alt mr-2"></i> Visit Project
+              </span>
+            </a>
+            {project.sourceCodeLink && (
+              <a 
+                href={project.sourceCodeLink} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-block px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors"
+              >
+                <span className="flex items-center">
+                  <i className="fab fa-github mr-2"></i> View Source Code
+                </span>
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ProjectsSection: React.FC = () => {
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  
   // Function to handle view project button clicks
   const handleViewProject = (link: string, e: React.MouseEvent) => {
     if (link === "#") {
@@ -53,6 +145,16 @@ const ProjectsSection: React.FC = () => {
       alert("This project is still in development. Check back soon!");
     }
     // Otherwise let the link navigate as normal
+  };
+  
+  // Function to show project details modal
+  const showProjectDetails = (project: Project) => {
+    setSelectedProject(project);
+  };
+  
+  // Function to close the modal
+  const closeModal = () => {
+    setSelectedProject(null);
   };
 
   return (
@@ -67,14 +169,21 @@ const ProjectsSection: React.FC = () => {
           {projects.map((project) => (
             <div 
               key={project.id}
-              className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all"
+              className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 hover:border-blue-300 border-2 border-transparent"
               data-aos="fade-up"
               data-aos-delay={project.delay}
             >
-              <div className="h-48 overflow-hidden">
+              <div className="h-48 overflow-hidden group">
                 <div 
-                  className="w-full h-full bg-gray-300 transform hover:scale-105 transition-transform duration-500 flex items-center justify-center"
+                  className="w-full h-full bg-gray-300 transform group-hover:scale-110 transition-transform duration-500 flex items-center justify-center relative cursor-pointer"
+                  onClick={() => showProjectDetails(project)}
                 >
+                  <div className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <span className="bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg transform scale-75 group-hover:scale-100 transition-transform">
+                      <i className="fas fa-search mr-2"></i> Quick View
+                    </span>
+                  </div>
                   {/* Show project thumbnail if available */}
                   {project.imageUrl.startsWith('/assets') ? (
                     <img
@@ -117,13 +226,13 @@ const ProjectsSection: React.FC = () => {
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-bold mb-2">{project.title}</h3>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-blue-600 transition-colors">{project.title}</h3>
                 <p className="text-gray-600 mb-4">{project.description}</p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.tags.map((tag, index) => (
                     <span 
                       key={index}
-                      className="text-xs py-1 px-2 bg-blue-100 text-blue-700 rounded-full"
+                      className="text-xs py-1 px-2 bg-blue-100 text-blue-700 rounded-full transform transition-all duration-300 hover:scale-110 hover:bg-blue-200"
                     >
                       {tag}
                     </span>
@@ -134,19 +243,23 @@ const ProjectsSection: React.FC = () => {
                     href={project.link} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:translate-y-px hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                     onClick={(e) => handleViewProject(project.link, e)}
                   >
-                    View Project
+                    <span className="flex items-center">
+                      <i className="fas fa-external-link-alt mr-2"></i> View Project
+                    </span>
                   </a>
                   {project.sourceCodeLink && (
                     <a 
                       href={project.sourceCodeLink} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="inline-block px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors"
+                      className="inline-block px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-all duration-300 transform hover:translate-y-px hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-opacity-50"
                     >
-                      Source Code
+                      <span className="flex items-center">
+                        <i className="fab fa-github mr-2"></i> Source Code
+                      </span>
                     </a>
                   )}
                 </div>
@@ -155,6 +268,16 @@ const ProjectsSection: React.FC = () => {
           ))}
         </div>
       </div>
+      
+      {/* Project Modal */}
+      {selectedProject && (
+        <div 
+          className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-4"
+          onClick={closeModal}
+        >
+          <ProjectModal project={selectedProject} onClose={closeModal} />
+        </div>
+      )}
     </section>
   );
 };
