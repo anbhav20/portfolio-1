@@ -56,11 +56,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70 p-4">
-      <div className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto relative" 
+      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto relative transition-colors" 
            onClick={(e) => e.stopPropagation()}>
         {/* Close Button */}
         <button 
-          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 z-10"
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 z-10 transition-colors"
           onClick={onClose}
         >
           <i className="fas fa-times"></i>
@@ -158,9 +158,9 @@ const ProjectsSection: React.FC = () => {
   };
 
   return (
-    <section id="projects" className="py-20 bg-gradient-to-b from-gray-50 to-blue-50">
+    <section id="projects" className="py-20 bg-gradient-to-b from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 transition-colors">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-16 relative" data-aos="fade-up">
+        <h2 className="text-3xl font-bold text-center mb-16 relative text-gray-800 dark:text-gray-100 transition-colors" data-aos="fade-up">
           My Projects
           <div className="absolute w-20 h-1 bg-blue-500 bottom-0 left-1/2 transform -translate-x-1/2 mt-2"></div>
         </h2>
@@ -169,13 +169,13 @@ const ProjectsSection: React.FC = () => {
           {projects.map((project) => (
             <div 
               key={project.id}
-              className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 hover:border-blue-300 border-2 border-transparent"
+              className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 hover:border-blue-300 dark:hover:border-blue-400 border-2 border-transparent"
               data-aos="fade-up"
               data-aos-delay={project.delay}
             >
               <div className="h-48 overflow-hidden group">
                 <div 
-                  className="w-full h-full bg-gray-300 transform group-hover:scale-110 transition-transform duration-500 flex items-center justify-center relative cursor-pointer"
+                  className="w-full h-full bg-gray-300 dark:bg-gray-700 transform group-hover:scale-110 transition-transform duration-500 flex items-center justify-center relative cursor-pointer"
                   onClick={() => showProjectDetails(project)}
                 >
                   <div className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
@@ -226,13 +226,13 @@ const ProjectsSection: React.FC = () => {
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 group-hover:text-blue-600 transition-colors">{project.title}</h3>
-                <p className="text-gray-600 mb-4">{project.description}</p>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-gray-800 dark:text-gray-100">{project.title}</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">{project.description}</p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.tags.map((tag, index) => (
                     <span 
                       key={index}
-                      className="text-xs py-1 px-2 bg-blue-100 text-blue-700 rounded-full transform transition-all duration-300 hover:scale-110 hover:bg-blue-200"
+                      className="text-xs py-1 px-2 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded-full transform transition-all duration-300 hover:scale-110 hover:bg-blue-200 dark:hover:bg-blue-800/40"
                     >
                       {tag}
                     </span>
