@@ -11,12 +11,13 @@ interface Skill {
 const skills: Skill[] = [
   { name: 'HTML', icon: 'fa-html5', proficiency: 90, delay: 200 },
   { name: 'CSS', icon: 'fa-css3-alt', proficiency: 85, delay: 300 },
-  { name: 'JavaScript', icon: 'fa-js', proficiency: 80, delay: 400 },
-  { name: 'React.js', icon: 'fa-react', proficiency: 75, delay: 500 },
+  { name: 'JavaScript', icon: 'fa-js', proficiency: 50, delay: 400 },
+  { name: 'React.js', icon: 'fa-react', proficiency: 40, delay: 500 },
   { name: 'C++', icon: 'fa-code', proficiency: 85, delay: 600 },
   { name: 'C', icon: 'fa-code', proficiency: 80, delay: 700 },
-  { name: 'DSA', icon: 'fa-sitemap', proficiency: 75, delay: 800 },
-  { name: 'SQL', icon: 'fa-database', proficiency: 70, delay: 900 }
+  { name: 'DSA', icon: 'fa-sitemap', proficiency: 50, delay: 800 },
+  { name: 'Python', icon: 'fa-python', proficiency: 70, delay: 900 },
+  { name: 'MongoDB', icon: 'fa-mongodb', proficiency: 60, delay: 1000 },
 ];
 
 const SkillsSection: React.FC = () => {

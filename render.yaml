@@ -2,8 +2,22 @@ services:
   - type: web
     name: portfolio
     env: node
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    buildCommand: |
+      # Build the frontend (React app)
+      cd client
+      npm install
+      npm run build
+      # Now back to root directory to install backend dependencies
+      cd ..
+      npm install
+    startCommand: |
+      # Start the backend (Express app) along with serving the React app
+      cd server
+      npm run start
     envVars:
       - key: NODE_ENV
         value: production
+      - key: EMAIL_USER
+        sync: false  # This will be set manually in the Render dashboard
+      - key: EMAIL_PASS
+        sync: false  # This will be set manually in the Render dashboard
