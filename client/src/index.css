@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 243 75% 59%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 199 89% 48%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary rounded;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/80;
+  }
+}
+
+@layer utilities {
+  .typing-container {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid;
+    width: 0;
+    animation: typing 3.5s steps(30, end) forwards, blink-caret 0.75s step-end infinite;
+  }
+  
+  @keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+  }
+  
+  @keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: currentColor; }
+  }
+  
+  .project-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .project-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .slideLeft {
+    animation: slideLeft 2.5s ease forwards;
+  }
+  
+  .slideRight {
+    animation: slideRight 2.5s ease forwards;
+  }
+  
+  .fadeIn {
+    animation: fadeIn 2.5s ease forwards;
+  }
+  
+  .fadeInLate {
+    animation: fadeIn 1.5s ease forwards 3s;
+  }
+  
+  @keyframes slideLeft {
+    0% { transform: translateX(0); }
+    30% { transform: translateX(-10%); }
+    50% { transform: translateX(-10%); }
+    100% { transform: translateX(-100%); }
+  }
+  
+  @keyframes slideRight {
+    0% { transform: translateX(0); }
+    30% { transform: translateX(10%); }
+    50% { transform: translateX(10%); }
+    100% { transform: translateX(100%); }
+  }
+  
+  @keyframes fadeIn {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+  
+  .main-content {
+    opacity: 0;
+    animation: fadeContent 1s ease forwards 3.5s;
+  }
+  
+  @keyframes fadeContent {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+}
