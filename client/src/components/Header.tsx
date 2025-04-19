@@ -1,7 +1,20 @@
 import { useState } from 'react';
 
+interface NavItem {
+  id: string;
+  label: string;
+}
+
+const navItems: NavItem[] = [
+  { id: 'about', label: 'About' },
+  { id: 'skills', label: 'Skills' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'contact', label: 'Contact' }
+];
+
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('about');
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -15,12 +28,37 @@ const Header = () => {
         behavior: 'smooth'
       });
       
+      // Update active section
+      setActiveSection(sectionId);
+      
       // Close mobile menu after clicking
       if (mobileMenuOpen) {
         setMobileMenuOpen(false);
       }
     }
   };
+
+  // Add scroll event listener to update active section based on scroll position
+  useState(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 100; // Offset for better UX
+
+      navItems.forEach(({ id }) => {
+        const section = document.getElementById(id);
+        if (section) {
+          const sectionTop = section.offsetTop;
+          const sectionBottom = sectionTop + section.offsetHeight;
+          
+          if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+            setActiveSection(id);
+          }
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  });
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-sm z-40 shadow-md">
@@ -39,45 +77,28 @@ const Header = () => {
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8" data-aos="fade-down" data-aos-delay="300">
+          {navItems.map((item) => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              className={`text-gray-700 hover:text-blue-600 transition-colors ${
+                activeSection === item.id ? 'text-blue-600 font-medium' : ''
+              }`}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection(item.id);
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
           <a
-            href="#about"
+            href="/assets/Abhishek_Resume.pdf"
             className="text-gray-700 hover:text-blue-600 transition-colors"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection('about');
-            }}
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            About
-          </a>
-          <a
-            href="#skills"
-            className="text-gray-700 hover:text-blue-600 transition-colors"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection('skills');
-            }}
-          >
-            Skills
-          </a>
-          <a
-            href="#projects"
-            className="text-gray-700 hover:text-blue-600 transition-colors"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection('projects');
-            }}
-          >
-            Projects
-          </a>
-          <a
-            href="#contact"
-            className="text-gray-700 hover:text-blue-600 transition-colors"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection('contact');
-            }}
-          >
-            Contact
+            CV
           </a>
         </nav>
         
@@ -86,6 +107,7 @@ const Header = () => {
           className="md:hidden text-gray-700 hover:text-blue-600 transition-colors"
           onClick={toggleMobileMenu}
           data-aos="fade-down"
+          aria-label="Toggle navigation menu"
         >
           <i className="fas fa-bars text-xl"></i>
         </button>
@@ -94,45 +116,28 @@ const Header = () => {
       {/* Mobile Navigation Menu */}
       <div className={`${mobileMenuOpen ? 'block' : 'hidden'} md:hidden bg-white shadow-md`}>
         <div className="container mx-auto px-4 py-2 flex flex-col space-y-3">
+          {navItems.map((item) => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              className={`text-gray-700 hover:text-blue-600 transition-colors py-2 ${
+                activeSection === item.id ? 'text-blue-600 font-medium' : ''
+              }`}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection(item.id);
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
           <a
-            href="#about"
+            href="/assets/Abhishek_Resume.pdf"
             className="text-gray-700 hover:text-blue-600 transition-colors py-2"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection('about');
-            }}
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            About
-          </a>
-          <a
-            href="#skills"
-            className="text-gray-700 hover:text-blue-600 transition-colors py-2"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection('skills');
-            }}
-          >
-            Skills
-          </a>
-          <a
-            href="#projects"
-            className="text-gray-700 hover:text-blue-600 transition-colors py-2"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection('projects');
-            }}
-          >
-            Projects
-          </a>
-          <a
-            href="#contact"
-            className="text-gray-700 hover:text-blue-600 transition-colors py-2"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection('contact');
-            }}
-          >
-            Contact
+            CV
           </a>
         </div>
       </div>

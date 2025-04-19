@@ -8,15 +8,18 @@ interface Project {
   link: string;
   tags: string[];
   delay: number;
+  sourceCodeLink?: string; // Optional GitHub repo link
 }
 
+// Customizable projects array - edit this to add your own projects
 const projects: Project[] = [
   {
     id: 1,
     title: "Movie Recommendation & OTT Availability",
     description: "Search for movies, get recommendations using ML, view trailers, and check OTT availability.",
-    imageUrl: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300",
+    imageUrl: "/assets/images/projects/movie-recommendation.jpg", // Place image in client/public/assets/images/projects/
     link: "https://movie-recommendation-ml-4ixm.onrender.com",
+    sourceCodeLink: "https://github.com/yourusername/movie-recommendation",
     tags: ["React", "ML", "API"],
     delay: 0
   },
@@ -24,8 +27,9 @@ const projects: Project[] = [
     id: 2,
     title: "E-Commerce Dashboard",
     description: "A responsive admin dashboard for managing an online store with real-time data visualization.",
-    imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300",
+    imageUrl: "/assets/images/projects/ecommerce-dashboard.jpg",
     link: "#",
+    sourceCodeLink: "https://github.com/yourusername/ecommerce-dashboard",
     tags: ["React", "Chart.js", "Firebase"],
     delay: 200
   },
@@ -33,14 +37,24 @@ const projects: Project[] = [
     id: 3,
     title: "Task Management App",
     description: "A feature-rich task manager with categories, priorities, and deadline reminders.",
-    imageUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300",
+    imageUrl: "/assets/images/projects/task-manager.jpg",
     link: "#",
+    sourceCodeLink: "https://github.com/yourusername/task-manager",
     tags: ["JavaScript", "LocalStorage", "PWA"],
     delay: 400
   }
 ];
 
 const ProjectsSection: React.FC = () => {
+  // Function to handle view project button clicks
+  const handleViewProject = (link: string, e: React.MouseEvent) => {
+    if (link === "#") {
+      e.preventDefault();
+      alert("This project is still in development. Check back soon!");
+    }
+    // Otherwise let the link navigate as normal
+  };
+
   return (
     <section id="projects" className="py-20 bg-gradient-to-b from-gray-50 to-blue-50">
       <div className="container mx-auto px-4">
@@ -61,7 +75,45 @@ const ProjectsSection: React.FC = () => {
                 <div 
                   className="w-full h-full bg-gray-300 transform hover:scale-105 transition-transform duration-500 flex items-center justify-center"
                 >
-                  <span className="text-gray-600 font-medium">{project.title}</span>
+                  {/* Show project thumbnail if available */}
+                  {project.imageUrl.startsWith('/assets') ? (
+                    <img
+                      src={project.imageUrl}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // If image fails, show project title as fallback
+                        e.currentTarget.style.display = 'none';
+                        const parent = e.currentTarget.parentNode;
+                        if (parent) {
+                          (parent as HTMLElement).classList.add('flex', 'items-center', 'justify-center');
+                          const titleSpan = document.createElement('span');
+                          titleSpan.className = 'text-gray-600 font-medium px-4 text-center';
+                          titleSpan.textContent = project.title;
+                          parent.appendChild(titleSpan);
+                        }
+                      }}
+                    />
+                  ) : (
+                    // Use remote image URLs directly
+                    <img
+                      src={project.imageUrl}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Fallback for external images too
+                        e.currentTarget.style.display = 'none';
+                        const parent = e.currentTarget.parentNode;
+                        if (parent) {
+                          (parent as HTMLElement).classList.add('flex', 'items-center', 'justify-center');
+                          const titleSpan = document.createElement('span');
+                          titleSpan.className = 'text-gray-600 font-medium px-4 text-center';
+                          titleSpan.textContent = project.title;
+                          parent.appendChild(titleSpan);
+                        }
+                      }}
+                    />
+                  )}
                 </div>
               </div>
               <div className="p-6">
@@ -77,14 +129,27 @@ const ProjectsSection: React.FC = () => {
                     </span>
                   ))}
                 </div>
-                <a 
-                  href={project.link} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  View Project
-                </a>
+                <div className="flex flex-wrap gap-3">
+                  <a 
+                    href={project.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    onClick={(e) => handleViewProject(project.link, e)}
+                  >
+                    View Project
+                  </a>
+                  {project.sourceCodeLink && (
+                    <a 
+                      href={project.sourceCodeLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-block px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors"
+                    >
+                      Source Code
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           ))}
