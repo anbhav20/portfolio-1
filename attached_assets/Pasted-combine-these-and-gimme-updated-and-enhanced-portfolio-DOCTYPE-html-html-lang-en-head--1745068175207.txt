@@ -1,0 +1,237 @@
+combine these and gimme updated and enhanced portfolio, 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staged Sliding Door Animation</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body, html {
+      height: 100%;
+      width: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #ffffff);
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .left, .right {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3.5rem;
+      font-weight: bold;
+      color: #1f1f1f;
+      z-index: 2;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    .left {
+      left: 0;
+      background: linear-gradient(135deg, #ffffff, #d0f1f9);
+      animation: slideLeft 2.5s ease forwards;
+    }
+
+    .right {
+      right: 0;
+      background: linear-gradient(135deg, #ffffff, #d0f1f9);
+      animation: slideRight 2.5s ease forwards;
+    }
+
+    @keyframes slideLeft {
+      0%   { transform: translateX(0); }
+      30%  { transform: translateX(-10%); }
+      50%  { transform: translateX(-10%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    @keyframes slideRight {
+      0%   { transform: translateX(0); }
+      30%  { transform: translateX(10%); }
+      50%  { transform: translateX(10%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #003344;
+      font-size: 2.5rem;
+      font-weight: 600;
+      opacity: 0;
+      animation: fadeIn 2.5s ease forwards;
+      animation-delay: 4.5s;
+      z-index: 1;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left">Hello</div>
+    <div class="right">World</div>
+    <div class="message">Hi, I'm Here</div>
+  </div>
+</body>
+</html>
+ ,  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Abhishek's Portfolio - Web Developer & Programmer">
+    <meta property="og:title" content="Abhishek | Portfolio">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abhishek | Portfolio</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+    <!-- Header -->
+    <header class="bg-gray-800 text-white flex justify-between items-center p-4 shadow-md">
+        <div class="text-2xl font-bold" data-aos="fade-down">Portfolio</div>
+        <nav data-aos="fade-down" data-aos-delay="300">
+            <a href="#about-section" class="mx-3 hover:text-blue-400">About Me</a>
+            <a href="#contact" class="mx-3 hover:text-blue-400">Contact</a>
+        </nav>
+    </header>
+    
+    <!-- Animated Text -->
+    <h2 id="animatedText" class="text-3xl font-bold text-center my-6 h-10" data-aos="fade-up"></h2>
+    
+    <!-- Avatar Section -->
+        <div class="flex flex-col items-center p-6">
+            <img src="anbhav.jpg" alt="Abhishek's Avatar" 
+             class="w-36 h-36 rounded-full shadow-md transition-transform duration-300 hover:scale-110" 
+                data-aos="zoom-in">
+            <div id="about-section" class="text-lg mt-4 text-center" data-aos="fade-up" data-aos-delay="300">
+                "From writing my first ‘Hello, World!’ to building the next big thing—this is just the beginning.
+            </div>
+        </div>
+
+    <!-- Skills Section -->
+    <section class="text-center mt-10 my-8">
+        <h2 class="text-2xl font-bold" data-aos="fade-up">Skills</h2>
+        <div class="flex flex-wrap justify-center gap-3 mt-4">
+            <span class="bg-gray-800 text-white px-4 py-2 rounded-lg text-lg" data-aos="fade-up" data-aos-delay="200">HTML</span>
+            <span class="bg-gray-800 text-white px-4 py-2 rounded-lg text-lg" data-aos="fade-up" data-aos-delay="400">CSS</span>
+            <span class="bg-gray-800 text-white px-4 py-2 rounded-lg text-lg" data-aos="fade-up" data-aos-delay="600">JavaScript</span>
+            <span class="bg-gray-800 text-white px-4 py-2 rounded-lg text-lg" data-aos="fade-up" data-aos-delay="800">React.js</span>
+            <span class="bg-gray-800 text-white px-4 py-2 rounded-lg text-lg" data-aos="fade-up" data-aos-delay="1000">C++</span>
+            <span class="bg-gray-800 text-white px-4 py-2 rounded-lg text-lg" data-aos="fade-up" data-aos-delay="1200">C</span>
+            <span class="bg-gray-800 text-white px-4 py-2 rounded-lg text-lg" data-aos="fade-up" data-aos-delay="1400">DSA</span>
+        </div>
+    </section>
+    <!-- Projects Section -->
+    <section class="text-center mt-10 my-8">
+        <h2 class="text-2xl font-bold">Projects</h2>
+        <div class="flex flex-wrap justify-center gap-3 mt-4">
+            <div class="bg-white p-4 shadow-md rounded-lg w-64 hover:shadow-lg">
+                <h3 class="font-bold">Movie Recommendation & OTT Availability</h3>
+                <p class="text-sm text-gray-600">Search for movies, get recommendations using ML, view trailers, and check OTT availability.</p>
+                <a href="https://movie-recommendation-ml-4ixm.onrender.com" target="_blank" class="text-blue-500 hover:underline">View Project</a>
+            </div>
+            <div class="bg-white p-4 shadow-md rounded-lg w-64 hover:shadow-lg ">Project 2</div>
+            <div class="bg-white p-4 shadow-md rounded-lg w-64 hover:shadow-lg">Project 3</div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section id="contact" class="text-center mt-10 my-8">
+        <h2 class="text-2xl font-bold" data-aos="fade-up">Contact</h2>
+        <div class="flex justify-center space-x-4 text-2xl mt-4">
+            <a href="mailto:spidey.9449@gmail.com" class="hover:text-blue-500" data-aos="zoom-in"><i class="fas fa-envelope"></i></a>
+            <a href="https://www.instagram.com/__anbhav" target="_blank" class="hover:text-blue-500" data-aos="zoom-in" data-aos-delay="300"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.linkedin.com/in/abhishek-singh-48b18a246" target="_blank" class="hover:text-blue-500" data-aos="zoom-in" data-aos-delay="600"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/anbhav20" target="_blank" class="hover:text-blue-500" data-aos="zoom-in" data-aos-delay="900"><i class="fab fa-github"></i></a>
+        </div>
+    </section>
+
+    <section id="CV" class="text-center mt-10 my-8">
+        <h2 class="text-xl font-bold" data-aos="fade-up">Download CV</h2>
+        <div class="flex justify-center space-x-4 text-xl mt-4">
+            <a href="AbhishekCV.pdf" id="download-cv" class="mt-2 inline-block bg-gray-800 text-white text-sm px-2 py-1 rounded-lg hover:bg-gray-700 transition" data-aos="fade-up" data-aos-delay="1200">
+                Download CV
+            </a>
+        </div>
+    </section>
+    
+    
+    <!-- Contact Form -->
+    <div class="max-w-md mx-auto mt-10 bg-white p-6 rounded-lg shadow-md" data-aos="fade-up">
+        <h2 class="text-xl font-bold text-center">Get in Touch</h2>
+        <form id="contactForm" class="mt-4">
+            <input type="text" id="name" placeholder="Your Name" class="w-full p-2 border rounded-md my-2" required>
+            <input type="email" id="email" placeholder="Your Email" class="w-full p-2 border rounded-md my-2" required>
+            <textarea id="message" placeholder="Your Message" rows="4" class="w-full p-2 border rounded-md my-2" required></textarea>
+            <button type="submit" class="w-full bg-gray-800 text-white py-2 rounded-md hover:bg-gray-700">Send Message</button>
+        </form>
+    </div>
+
+    <!-- cv  tracking -->
+    <script>
+// ✅ Form Submission
+
+//top message
+        function typeMessage(elementId, messages, delay = 1000) {
+            let elem = document.getElementById(elementId);
+            let index = 0;
+            let charIndex = 0;
+            function type() {
+                if (charIndex < messages[index].length) {
+                    elem.textContent += messages[index][charIndex];
+                    charIndex++;
+                    setTimeout(type, 100);
+                } else {
+                    setTimeout(() => {
+                        elem.textContent = "";
+                        index = (index + 1) % messages.length;
+                        charIndex = 0;
+                        type();
+                    }, delay);
+                }
+            }
+            type();
+        }
+        typeMessage("animatedText", ["Hi!", "I'm Abhishek."], 1000);
+    </script>
+
+    <!-- AOS Library Script -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000, // Animation duration
+            once: true, // Animation runs only once
+        });
+    </script>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center p-4 mt-8">
+        <p>&copy; <span id="currentYear"></span> Abhishek Singh. All Rights Reserved.</p>
+        <p>Made with ❤️ by Abhishek</p>
+    </footer>
+    
+</body>
+</html>
