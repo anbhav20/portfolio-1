@@ -8,6 +8,21 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 
+// Define CSS for portfolio page
+const portfolioStyles = `
+  @keyframes mainFadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    main {
+      overflow-x: hidden;
+    }
+  }
+`;
+
 const Portfolio = () => {
   const [animationComplete, setAnimationComplete] = useState(false);
   
@@ -19,6 +34,17 @@ const Portfolio = () => {
     
     return () => {
       clearTimeout(timer);
+    };
+  }, []);
+
+  // Add the CSS to the document
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = portfolioStyles;
+    document.head.appendChild(styleElement);
+    
+    return () => {
+      document.head.removeChild(styleElement);
     };
   }, []);
 
@@ -40,13 +66,6 @@ const Portfolio = () => {
         <Footer />
         <ScrollToTop />
       </main>
-
-      <style jsx="true">{`
-        @keyframes mainFadeIn {
-          0% { opacity: 0; }
-          100% { opacity: 1; }
-        }
-      `}</style>
     </>
   );
 };

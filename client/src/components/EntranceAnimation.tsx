@@ -1,6 +1,104 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
+// Define CSS styles for the animation
+const styles = `
+  @keyframes slideLeft {
+    0%   { transform: translateX(0); }
+    30%  { transform: translateX(-10%); }
+    50%  { transform: translateX(-10%); }
+    100% { transform: translateX(-100%); }
+  }
+
+  @keyframes slideRight {
+    0%   { transform: translateX(0); }
+    30%  { transform: translateX(10%); }
+    50%  { transform: translateX(10%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 3px;
+    height: 1em;
+    background-color: currentColor;
+    margin-left: 2px;
+    animation: blink 1s infinite;
+  }
+  
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  @media (max-width: 640px) {
+    .cursor {
+      height: 0.8em;
+    }
+  }
+`;
 
 const EntranceAnimation: React.FC = () => {
+  const [typingText, setTypingText] = useState("");
+  const [isTyping, setIsTyping] = useState(true);
+  const fullText = "Welcome to my Portfolio";
+  const [typingComplete, setTypingComplete] = useState(false);
+  const [disappearing, setDisappearing] = useState(false);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    
+    // Start the typewriter effect after doors begin to slide
+    const startTyping = setTimeout(() => {
+      let currentIndex = 0;
+      
+      // Typing effect
+      const typeInterval = setInterval(() => {
+        if (currentIndex <= fullText.length) {
+          setTypingText(fullText.substring(0, currentIndex));
+          currentIndex++;
+        } else {
+          clearInterval(typeInterval);
+          setTypingComplete(true);
+          setIsTyping(false);
+          
+          // Wait before starting to delete
+          setTimeout(() => {
+            setDisappearing(true);
+            let deleteIndex = fullText.length;
+            
+            // Deleting effect
+            const deleteInterval = setInterval(() => {
+              if (deleteIndex >= 0) {
+                setTypingText(fullText.substring(0, deleteIndex));
+                deleteIndex--;
+              } else {
+                clearInterval(deleteInterval);
+              }
+            }, 50); // Slightly faster deletion speed
+          }, 500); // Short pause before deletion
+        }
+      }, 100);
+      
+      return () => {
+        clearInterval(typeInterval);
+        clearTimeout(timer);
+      };
+    }, 500); // Start typing after a short delay
+    
+    return () => clearTimeout(startTyping);
+  }, []);
+
+  // Add the CSS to the document
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = styles;
+    document.head.appendChild(styleElement);
+    
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
+
   return (
     <div className="fixed top-0 left-0 w-full h-full z-50 overflow-hidden">
       <div 
@@ -21,37 +119,16 @@ const EntranceAnimation: React.FC = () => {
       >
         World
       </div>
-      <div 
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl md:text-5xl font-semibold text-blue-800 opacity-0"
-        style={{
-          animation: 'fadeIn 1.5s ease forwards',
-          animationDelay: '2.5s',
-          zIndex: 1
-        }}
-      >
-        Welcome to my Portfolio
-      </div>
-
-      <style jsx="true">{`
-        @keyframes slideLeft {
-          0%   { transform: translateX(0); }
-          30%  { transform: translateX(-10%); }
-          50%  { transform: translateX(-10%); }
-          100% { transform: translateX(-100%); }
-        }
-
-        @keyframes slideRight {
-          0%   { transform: translateX(0); }
-          30%  { transform: translateX(10%); }
-          50%  { transform: translateX(10%); }
-          100% { transform: translateX(100%); }
-        }
-
-        @keyframes fadeIn {
-          0% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
-          100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        }
-      `}</style>
+      
+      {typingText && (
+        <div 
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl md:text-5xl font-semibold text-blue-800"
+          style={{ zIndex: 1 }}
+        >
+          {typingText}
+          {isTyping && <span className="cursor">|</span>}
+        </div>
+      )}
     </div>
   );
 };
