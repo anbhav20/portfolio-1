@@ -6,13 +6,18 @@
     "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
     "noEmit": true,
     "module": "ESNext",
+    "target": "ES2020", // 👈 RECOMMENDED: Make sure target is defined
     "strict": true,
     "lib": ["esnext", "dom", "dom.iterable"],
     "jsx": "preserve",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true, // 👈 ADD: Helps with smoother imports
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
     "moduleResolution": "bundler",
+    "resolveJsonModule": true, // 👈 ADD: If you're importing JSON files
+    "resolvePackageJsonExports": true,   // 👈 Optional, but useful in monorepos
+    "resolvePackageJsonImports": true,   // 👈 Optional, helps bundlers
     "baseUrl": ".",
     "types": ["node", "vite/client"],
     "paths": {

@@ -65,5 +65,6 @@ app.use((req, res, next) => {
     //reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    log(`CORS enabled for: ${process.env.FRONTEND_URL}, http://localhost:5000`);
   });
 })();

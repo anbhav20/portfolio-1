@@ -1,17 +1,24 @@
+import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
 // Load AOS library
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 // Initialize AOS
 AOS.init({
   duration: 800,
-  easing: 'ease-in-out',
+  easing: "ease-in-out",
   once: true,
-  mirror: false
+  mirror: false,
 });
 
-createRoot(document.getElementById("root")!).render(<App />);
+// We've moved the tracking to App.tsx to track on every page load
+
+createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
