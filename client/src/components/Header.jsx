@@ -93,7 +93,7 @@ const Header = () => {
             </a>
           ))}
           <a
-            href="/assets/AbhishekCV.pdf"
+            href="/assets/AbhishekCV.pdf?v=2"
             className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             target="_blank"
             rel="noopener noreferrer"
@@ -141,7 +141,7 @@ const Header = () => {
             </a>
           ))}
           <a
-            href="/assets/AbhishekCV.pdf"
+            href="/assets/AbhishekCV.pdf?v=2"
             className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2"
             target="_blank"
             rel="noopener noreferrer"

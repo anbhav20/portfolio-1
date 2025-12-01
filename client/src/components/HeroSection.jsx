@@ -9,7 +9,7 @@ const profileData = {
   // Update this path to your profile image in client/public/assets/images/
   profileImage: "/assets/images/profile.jpg",
   // Update this path to your CV in client/public/assets/
-  cvPath: "/assets/AbhishekCV.pdf"
+  cvPath: "/assets/AbhishekCV.pdf?v=2"
 };
 
 // Cursor style

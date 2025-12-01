@@ -20,7 +20,7 @@ const projects = [
     imageUrl: "/assets/images/projects/portfolio.jpg",
     link: "https://portfolio-1-a01n.onrender.com",
     sourceCodeLink: "https://github.com/anbhav20/portfolio-1",
-    tags: ["React", "JavaScript", "Vite", "Tailwind CSS", "Shadcn","Radix UI", "Node.js", "Express.js", "Wouter", "AOS","Zod", "React Hook Form", "Nodemailer"],
+    tags: ["React", "JavaScript", "Vite", "Tailwind CSS", "Shadcn", "Node.js", "Express.js", "AOS", "Nodemailer"],
     delay: 200
   },
   {

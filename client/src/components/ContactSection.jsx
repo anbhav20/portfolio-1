@@ -210,7 +210,7 @@ const ContactSection = () => {
                   <i className="fab fa-github text-xl"></i>
                 </a>
                 <a 
-                  href="https://www.instagram.com/__anbhav" 
+                  href="https://www.instagram.com/anbhav_19" 
                   target="_blank"
                   rel="noopener noreferrer" 
                   className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-colors"
@@ -221,7 +221,7 @@ const ContactSection = () => {
                 
                 {/* CV Download */}
                 <a 
-                  href="/assets/AbhishekCV.pdf" 
+                  href="/assets/AbhishekCV.pdf?v=2" 
                   target="_blank"
                   rel="noopener noreferrer" 
                   className="w-auto px-4 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-md"
