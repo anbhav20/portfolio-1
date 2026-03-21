@@ -1,124 +1,129 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const HELLOS = [
-  { text: 'Hello',       lang: 'English'    },
-  { text: 'Hola',        lang: 'Spanish'    },
-  { text: 'Bonjour',     lang: 'French'     },
-  { text: 'Ciao',        lang: 'Italian'    },
-  { text: 'Hallo',       lang: 'German'     },
-  { text: 'Olá',         lang: 'Portuguese' },
-  { text: 'Привет',      lang: 'Russian'    },
-  { text: 'नमस्ते',       lang: 'Hindi'      },
-  { text: '你好',         lang: 'Chinese'    },
-  { text: 'こんにちは',   lang: 'Japanese'   },
-  { text: '안녕하세요',   lang: 'Korean'     },
-  { text: 'مرحبا',       lang: 'Arabic'     },
+  { text: 'Hello',      lang: 'English'    },
+  { text: 'Hola',       lang: 'Spanish'    },
+  { text: 'Bonjour',    lang: 'French'     },
+  { text: 'Ciao',       lang: 'Italian'    },
+  { text: 'Hallo',      lang: 'German'     },
+  { text: 'Olá',        lang: 'Portuguese' },
+  { text: 'Привет',     lang: 'Russian'    },
+  { text: 'नमस्ते',      lang: 'Hindi'      },
+  { text: '你好',        lang: 'Chinese'    },
+  { text: 'こんにちは',  lang: 'Japanese'   },
+  { text: '안녕하세요',  lang: 'Korean'     },
+  { text: 'مرحبا',      lang: 'Arabic'     },
 ];
 
-const HOLD_MS = 200;
+const HOLD_MS  = 160; // faster cycling
+const COLS     = 5;   // number of vertical panel strips
 
 const EntranceAnimation = ({ onComplete }) => {
-  const [index, setIndex]       = useState(0);
-  const [exiting, setExiting]   = useState(false);
+  const [index, setIndex]     = useState(0);
+  const [phase, setPhase]     = useState('show'); // 'show' | 'exit'
   const [wordWidth, setWordWidth] = useState('auto');
   const measureRef = useRef(null);
   const doneRef    = useRef(false);
 
-  const measureWidth = () => {
-    if (measureRef.current) {
-      setWordWidth(measureRef.current.offsetWidth);
-    }
+  const measure = () => {
+    if (measureRef.current) setWordWidth(measureRef.current.offsetWidth);
   };
 
-  useEffect(() => {
-    requestAnimationFrame(measureWidth);
-  }, []);
+  useEffect(() => { requestAnimationFrame(measure); }, []);
 
   useEffect(() => {
     const timers = [];
-
     HELLOS.forEach((_, i) => {
       timers.push(setTimeout(() => {
         setIndex(i);
-        setTimeout(measureWidth, 16);
+        setTimeout(measure, 10);
       }, i * HOLD_MS));
     });
 
-    const exitStart = HELLOS.length * HOLD_MS + 80;
-    timers.push(setTimeout(() => setExiting(true), exitStart));
+    const exitAt = HELLOS.length * HOLD_MS + 120;
+    timers.push(setTimeout(() => setPhase('exit'), exitAt));
+    // panels take ~900ms to slide; fire onComplete after last panel done
     timers.push(setTimeout(() => {
-      if (!doneRef.current) {
-        doneRef.current = true;
-        onComplete?.();
-      }
-    }, exitStart + 950));
+      if (!doneRef.current) { doneRef.current = true; onComplete?.(); }
+    }, exitAt + 980));
 
     return () => timers.forEach(clearTimeout);
   }, []);
 
   const current = HELLOS[index];
+  const isExit  = phase === 'exit';
 
   return (
-    <div className="fixed inset-0 z-[200] overflow-hidden pointer-events-none">
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 300,
+        pointerEvents: isExit ? 'none' : 'all',
+        overflow: 'hidden',
+      }}
+    >
+      {/* ── Vertical strip panels (staggered slide-up on exit) ── */}
+      {Array.from({ length: COLS }).map((_, col) => (
+        <motion.div
+          key={col}
+          style={{
+            position: 'absolute',
+            top: 0, bottom: 0,
+            left:  `${(col / COLS) * 100}%`,
+            width: `${100 / COLS}%`,
+            background: col % 2 === 0 ? '#0a0a0a' : '#111111',
+            originY: 1,
+          }}
+          initial={{ scaleY: 1 }}
+          animate={isExit ? { scaleY: 0 } : { scaleY: 1 }}
+          transition={{
+            duration: 0.75,
+            ease: [0.76, 0, 0.24, 1],
+            delay: isExit ? col * 0.055 : 0,
+          }}
+        />
+      ))}
 
-      {/* Top panel */}
-      <motion.div
-        className="absolute top-0 left-0 w-full h-1/2"
-        style={{ background: '#0d0d0d' }}
-        animate={exiting ? { y: '-100%' } : { y: 0 }}
-        transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
-      />
-
-      {/* Bottom panel */}
-      <motion.div
-        className="absolute bottom-0 left-0 w-full h-1/2"
-        style={{ background: '#0d0d0d' }}
-        animate={exiting ? { y: '100%' } : { y: 0 }}
-        transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
-      />
-
-      {/* Center content */}
-      {!exiting && (
+      {/* ── Centre text — only while showing ── */}
+      {!isExit && (
         <div
-          className="absolute inset-0 flex flex-col items-center justify-center"
-          style={{ zIndex: 10, gap: '0.5rem' }}
+          style={{
+            position: 'absolute', inset: 0, zIndex: 10,
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            gap: 10, pointerEvents: 'none',
+          }}
         >
-          {/* Hidden measuring span */}
+          {/* Hidden measurer */}
           <span
             ref={measureRef}
-            aria-hidden="true"
+            aria-hidden
             style={{
-              position: 'absolute',
-              visibility: 'hidden',
-              whiteSpace: 'nowrap',
-              fontSize: 'clamp(2.5rem, 8vw, 6rem)',
-              fontWeight: 700,
-              letterSpacing: '-0.035em',
-              fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
-              pointerEvents: 'none',
+              position: 'absolute', visibility: 'hidden', whiteSpace: 'nowrap',
+              fontSize: 'clamp(2.8rem, 9vw, 6.5rem)',
+              fontWeight: 800, letterSpacing: '-0.04em',
+              fontFamily: 'Syne, ui-sans-serif, sans-serif',
             }}
           >
             {current.text}
           </span>
 
-          {/* Width-morphing container — NO opacity changes inside */}
+          {/* Morphing width container */}
           <motion.div
-            style={{ overflow: 'hidden', whiteSpace: 'nowrap', lineHeight: 1.05 }}
+            style={{ overflow: 'hidden', whiteSpace: 'nowrap' }}
             animate={{ width: wordWidth }}
-            transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.13, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* Plain element — text swaps instantly, always opacity 1 */}
             <p
               style={{
-                fontSize: 'clamp(2.5rem, 8vw, 6rem)',
-                fontWeight: 700,
-                letterSpacing: '-0.035em',
-                fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
-                color: '#ffffff',
                 margin: 0,
+                fontSize: 'clamp(2.8rem, 9vw, 6.5rem)',
+                fontWeight: 800,
+                letterSpacing: '-0.04em',
+                fontFamily: 'Syne, ui-sans-serif, sans-serif',
+                color: '#ffffff',
                 whiteSpace: 'nowrap',
-                opacity: 1,
+                lineHeight: 1,
                 userSelect: 'none',
               }}
             >
@@ -126,14 +131,14 @@ const EntranceAnimation = ({ onComplete }) => {
             </p>
           </motion.div>
 
-          {/* Language label — plain swap, always visible */}
+          {/* Language label */}
           <span
             style={{
-              color: 'rgba(255,255,255,0.35)',
-              fontSize: 'clamp(0.6rem, 1.2vw, 0.78rem)',
-              letterSpacing: '0.22em',
+              color: 'rgba(255,255,255,0.28)',
+              fontSize: 'clamp(0.55rem, 1.1vw, 0.72rem)',
+              letterSpacing: '0.28em',
               textTransform: 'uppercase',
-              fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
+              fontFamily: 'DM Sans, ui-sans-serif, sans-serif',
               fontWeight: 500,
               userSelect: 'none',
             }}
@@ -141,31 +146,35 @@ const EntranceAnimation = ({ onComplete }) => {
             {current.lang}
           </span>
 
-          {/* Progress bar */}
+          {/* Progress line */}
           <div
             style={{
-              position: 'absolute',
-              bottom: 32,
-              left: '50%',
+              position: 'absolute', bottom: 36, left: '50%',
               transform: 'translateX(-50%)',
-              width: 40,
-              height: 1,
-              background: 'rgba(255,255,255,0.1)',
-              borderRadius: 1,
-              overflow: 'hidden',
+              width: 48, height: 1,
+              background: 'rgba(255,255,255,0.08)',
+              borderRadius: 1, overflow: 'hidden',
             }}
           >
             <motion.div
               style={{
-                height: '100%',
-                background: 'rgba(255,255,255,0.5)',
-                originX: 0,
-                borderRadius: 1,
+                height: '100%', background: 'rgba(255,255,255,0.45)',
+                originX: 0, borderRadius: 1,
               }}
               animate={{ scaleX: (index + 1) / HELLOS.length }}
-              transition={{ duration: (HOLD_MS / 1000) * 0.9, ease: 'linear' }}
+              transition={{ duration: (HOLD_MS / 1000) * 0.85, ease: 'linear' }}
             />
           </div>
+
+          {/* Small dot grid decoration */}
+          <div
+            style={{
+              position: 'absolute', inset: 0,
+              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)',
+              backgroundSize: '28px 28px',
+              pointerEvents: 'none',
+            }}
+          />
         </div>
       )}
     </div>
