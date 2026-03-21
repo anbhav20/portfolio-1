@@ -4,12 +4,10 @@ export default {
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
-      // ── Fonts ──────────────────────────────────────────────────────────────
       fontFamily: {
-        sans:    ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        display: ['Syne',  'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans:    ['Satoshi', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['Satoshi', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
-      // ── Tighter font size scale (professional, smaller feel) ───────────────
       fontSize: {
         'xs':   ['0.7rem',   { lineHeight: '1rem' }],
         'sm':   ['0.775rem', { lineHeight: '1.25rem' }],
@@ -24,7 +22,6 @@ export default {
         '7xl':  ['3.75rem',  { lineHeight: '1rem' }],
         '8xl':  ['4.5rem',   { lineHeight: '1rem' }],
       },
-      // ── Keep ALL existing Shadcn color tokens ──────────────────────────────
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -82,7 +79,6 @@ export default {
           ring:                 "hsl(var(--sidebar-ring))",
         },
       },
-      // ── Keep existing keyframes ────────────────────────────────────────────
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

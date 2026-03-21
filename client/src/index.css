@@ -2,10 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Google Fonts ────────────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap');
+/* ─── Satoshi from Fontshare ─────────────────────────────────────────────── */
 
-/* ─── Shadcn CSS tokens (unchanged) ──────────────────────────────────────── */
+
+/* ─── Shadcn CSS tokens ───────────────────────────────────────────────────── */
 :root {
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
@@ -28,8 +28,11 @@
   --ring: 221.2 83.2% 53.3%;
   --radius: 0.5rem;
 
-  /* ── Base font size — makes everything slightly smaller site-wide ── */
   font-size: 15px;
+
+  --section-px: clamp(1.5rem, 8vw, 8rem);
+  --section-py: clamp(4rem, 8vw, 7rem);
+  --hero-px: clamp(1.25rem, 4vw, 3.5rem);
 }
 
 .dark {
@@ -54,14 +57,10 @@
   --ring: 224.3 76.3% 48%;
 }
 
-/* ─── Base layer ─────────────────────────────────────────────────────────── */
 @layer base {
-  * {
-    @apply border-border;
-  }
+  * { @apply border-border; }
 
   html {
-    /* Crisp font rendering — #1 thing that makes text look professional */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -70,48 +69,32 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1, 'ss01' 1;
-    /* Slightly tighter tracking = more professional than default */
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
     letter-spacing: -0.011em;
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
   }
 
-  /* ── All headings → Syne (display font), tight tracking ── */
+  /* Satoshi everywhere — single font, no switching between Syne/Inter */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Syne', ui-sans-serif, system-ui, sans-serif;
+    font-family: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
     font-weight: 700;
     letter-spacing: -0.03em;
     line-height: 1.1;
   }
 
-  /* ── Body copy → Inter, slightly tight ── */
-  p, span, li, label, input, textarea, button {
-    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    letter-spacing: -0.008em;
+  p, span, li, label, input, textarea, button, a {
+    font-family: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.01em;
   }
 
-  /* ── Smooth focus rings ── */
-  *:focus-visible {
-    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
-  }
+  *:focus-visible { @apply outline-none ring-0; }
+  ::selection { @apply bg-blue-500 text-white; }
 
-  /* ── Text selection ── */
-  ::selection {
-    @apply bg-blue-500 text-white;
-  }
-
-  /* ── Minimal custom scrollbar ── */
   ::-webkit-scrollbar       { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 dark:bg-gray-700;
-    border-radius: 999px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400 dark:bg-gray-600;
-  }
+  ::-webkit-scrollbar-thumb { @apply bg-gray-300 dark:bg-gray-700; border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-gray-400 dark:bg-gray-600; }
 
-  /* ── Keep existing dark mode overrides ── */
   .dark .bg-white          { @apply bg-gray-800; }
   .dark .bg-gray-50,
   .dark .bg-gray-100       { @apply bg-gray-800; }
@@ -122,21 +105,42 @@
   .dark .border-gray-300   { @apply border-gray-700; }
   .dark .from-gray-50      { @apply from-gray-900; }
   .dark .to-blue-50        { @apply to-blue-900; }
-
-  .transition-theme {
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-  }
+  .transition-theme { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
 }
 
-/* ─── Utility: use display font manually anywhere ─────────────────────────── */
 @layer utilities {
-  .font-display {
-    font-family: 'Syne', ui-sans-serif, system-ui, sans-serif;
-  }
+  .font-display { font-family: 'Satoshi', ui-sans-serif, system-ui, sans-serif; }
 }
 
-.font-inter,
-.font-inter * {
-  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif !important;
+/* Override any hardcoded Inter/Syne references in components */
+.font-inter, .font-inter *,
+[style*="Inter"], [style*="Syne"] {
+  font-family: 'Satoshi', ui-sans-serif, system-ui, sans-serif !important;
 }
- 
+
+/* section-wrap */
+.section-wrap {
+  width: 100%;
+  padding-left: var(--section-px);
+  padding-right: var(--section-px);
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* hero-wrap */
+.hero-wrap {
+  width: 100%;
+  padding-left: var(--hero-px);
+  padding-right: var(--hero-px);
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Fix footer/contact heading line-height */
+footer h1, footer h2, footer h3,
+#contact h1, #contact h2, #contact h3 {
+  font-family: 'Satoshi', ui-sans-serif, system-ui, sans-serif !important;
+  line-height: 1.1 !important;
+}

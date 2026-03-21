@@ -1,141 +1,171 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { motion } from 'framer-motion';
 
-// Define CSS styles for the animation
-const styles = `
-  @keyframes slideLeft {
-    0%   { transform: translateX(0); }
-    30%  { transform: translateX(-10%); }
-    50%  { transform: translateX(-10%); }
-    100% { transform: translateX(-100%); }
-  }
+const HELLOS = [
+  { text: 'Hello',       lang: 'English'    },
+  { text: 'Hola',        lang: 'Spanish'    },
+  { text: 'Bonjour',     lang: 'French'     },
+  { text: 'Ciao',        lang: 'Italian'    },
+  { text: 'Hallo',       lang: 'German'     },
+  { text: 'Olá',         lang: 'Portuguese' },
+  { text: 'Привет',      lang: 'Russian'    },
+  { text: 'नमस्ते',       lang: 'Hindi'      },
+  { text: '你好',         lang: 'Chinese'    },
+  { text: 'こんにちは',   lang: 'Japanese'   },
+  { text: '안녕하세요',   lang: 'Korean'     },
+  { text: 'مرحبا',       lang: 'Arabic'     },
+];
 
-  @keyframes slideRight {
-    0%   { transform: translateX(0); }
-    30%  { transform: translateX(10%); }
-    50%  { transform: translateX(10%); }
-    100% { transform: translateX(100%); }
-  }
+const HOLD_MS = 200;
 
-  .cursor {
-    display: inline-block;
-    width: 3px;
-    height: 1em;
-    background-color: currentColor;
-    margin-left: 2px;
-    animation: blink 1s infinite;
-  }
-  
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-  }
+const EntranceAnimation = ({ onComplete }) => {
+  const [index, setIndex]       = useState(0);
+  const [exiting, setExiting]   = useState(false);
+  const [wordWidth, setWordWidth] = useState('auto');
+  const measureRef = useRef(null);
+  const doneRef    = useRef(false);
 
-  @media (max-width: 640px) {
-    .cursor {
-      height: 0.8em;
+  const measureWidth = () => {
+    if (measureRef.current) {
+      setWordWidth(measureRef.current.offsetWidth);
     }
-  }
-`;
-
-const EntranceAnimation = () => {
-  const [typingText, setTypingText] = useState("");
-  const [isTyping, setIsTyping] = useState(false); // Start with no typing
-  const [showTyping, setShowTyping] = useState(false); // Control when to show the text
-  const fullText = "Welcome to my Portfolio";
-  const [typingComplete, setTypingComplete] = useState(false);
-  const [disappearing, setDisappearing] = useState(false);
-
-  // Door animation timing
-  const doorAnimationDuration = 2500; // 2.5 seconds for door animation
-  const typingStartDelay = 2600; // Start typing after doors are almost gone
-  const typingDuration = 2000; // Approximate time for typing and erasing
+  };
 
   useEffect(() => {
-    // First, wait for the door animation to finish
-    const showTypingTimeout = setTimeout(() => {
-      setShowTyping(true);
-      setIsTyping(true);
-      
-      // Start the typewriter effect after doors complete sliding
-      let currentIndex = 0;
-      
-      // Typing effect
-      const typeInterval = setInterval(() => {
-        if (currentIndex <= fullText.length) {
-          setTypingText(fullText.substring(0, currentIndex));
-          currentIndex++;
-        } else {
-          clearInterval(typeInterval);
-          setTypingComplete(true);
-          setIsTyping(false);
-          
-          // Wait before starting to delete
-          setTimeout(() => {
-            setDisappearing(true);
-            let deleteIndex = fullText.length;
-            
-            // Deleting effect
-            const deleteInterval = setInterval(() => {
-              if (deleteIndex >= 0) {
-                setTypingText(fullText.substring(0, deleteIndex));
-                deleteIndex--;
-              } else {
-                clearInterval(deleteInterval);
-                // Hide the typing element completely after erasing
-                setShowTyping(false);
-              }
-            }, 50); // Slightly faster deletion speed
-          }, 800); // Longer pause before deletion to ensure text is read
-        }
-      }, 100);
-      
-      return () => {
-        clearInterval(typeInterval);
-      };
-    }, typingStartDelay); // Start typing after door animation is almost complete
-    
-    return () => clearTimeout(showTypingTimeout);
+    requestAnimationFrame(measureWidth);
   }, []);
 
-  // Add the CSS to the document
   useEffect(() => {
-    const styleElement = document.createElement('style');
-    styleElement.innerHTML = styles;
-    document.head.appendChild(styleElement);
-    
-    return () => {
-      document.head.removeChild(styleElement);
-    };
+    const timers = [];
+
+    HELLOS.forEach((_, i) => {
+      timers.push(setTimeout(() => {
+        setIndex(i);
+        setTimeout(measureWidth, 16);
+      }, i * HOLD_MS));
+    });
+
+    const exitStart = HELLOS.length * HOLD_MS + 80;
+    timers.push(setTimeout(() => setExiting(true), exitStart));
+    timers.push(setTimeout(() => {
+      if (!doneRef.current) {
+        doneRef.current = true;
+        onComplete?.();
+      }
+    }, exitStart + 950));
+
+    return () => timers.forEach(clearTimeout);
   }, []);
+
+  const current = HELLOS[index];
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full z-50 overflow-hidden">
-      <div 
-        className="absolute top-0 left-0 w-1/2 h-full flex justify-center items-center text-4xl md:text-6xl font-bold text-gray-900"
-        style={{
-          background: 'linear-gradient(135deg, #ffffff, #d0f1f9)',
-          animation: `slideLeft ${doorAnimationDuration/1000}s ease forwards`
-        }}
-      >
-        Hello
-      </div>
-      <div 
-        className="absolute top-0 right-0 w-1/2 h-full flex justify-center items-center text-4xl md:text-6xl font-bold text-gray-900"
-        style={{
-          background: 'linear-gradient(135deg, #ffffff, #d0f1f9)',
-          animation: `slideRight ${doorAnimationDuration/1000}s ease forwards`
-        }}
-      >
-        World
-      </div>
-      
-      {showTyping && (
-        <div 
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl md:text-5xl font-semibold text-blue-800"
-          style={{ zIndex: 1 }}
+    <div className="fixed inset-0 z-[200] overflow-hidden pointer-events-none">
+
+      {/* Top panel */}
+      <motion.div
+        className="absolute top-0 left-0 w-full h-1/2"
+        style={{ background: '#0d0d0d' }}
+        animate={exiting ? { y: '-100%' } : { y: 0 }}
+        transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
+      />
+
+      {/* Bottom panel */}
+      <motion.div
+        className="absolute bottom-0 left-0 w-full h-1/2"
+        style={{ background: '#0d0d0d' }}
+        animate={exiting ? { y: '100%' } : { y: 0 }}
+        transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
+      />
+
+      {/* Center content */}
+      {!exiting && (
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center"
+          style={{ zIndex: 10, gap: '0.5rem' }}
         >
-          {typingText}
-          {isTyping && <span className="cursor">|</span>}
+          {/* Hidden measuring span */}
+          <span
+            ref={measureRef}
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              visibility: 'hidden',
+              whiteSpace: 'nowrap',
+              fontSize: 'clamp(2.5rem, 8vw, 6rem)',
+              fontWeight: 700,
+              letterSpacing: '-0.035em',
+              fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
+              pointerEvents: 'none',
+            }}
+          >
+            {current.text}
+          </span>
+
+          {/* Width-morphing container — NO opacity changes inside */}
+          <motion.div
+            style={{ overflow: 'hidden', whiteSpace: 'nowrap', lineHeight: 1.05 }}
+            animate={{ width: wordWidth }}
+            transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* Plain element — text swaps instantly, always opacity 1 */}
+            <p
+              style={{
+                fontSize: 'clamp(2.5rem, 8vw, 6rem)',
+                fontWeight: 700,
+                letterSpacing: '-0.035em',
+                fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
+                color: '#ffffff',
+                margin: 0,
+                whiteSpace: 'nowrap',
+                opacity: 1,
+                userSelect: 'none',
+              }}
+            >
+              {current.text}
+            </p>
+          </motion.div>
+
+          {/* Language label — plain swap, always visible */}
+          <span
+            style={{
+              color: 'rgba(255,255,255,0.35)',
+              fontSize: 'clamp(0.6rem, 1.2vw, 0.78rem)',
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
+              fontWeight: 500,
+              userSelect: 'none',
+            }}
+          >
+            {current.lang}
+          </span>
+
+          {/* Progress bar */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 32,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 40,
+              height: 1,
+              background: 'rgba(255,255,255,0.1)',
+              borderRadius: 1,
+              overflow: 'hidden',
+            }}
+          >
+            <motion.div
+              style={{
+                height: '100%',
+                background: 'rgba(255,255,255,0.5)',
+                originX: 0,
+                borderRadius: 1,
+              }}
+              animate={{ scaleX: (index + 1) / HELLOS.length }}
+              transition={{ duration: (HOLD_MS / 1000) * 0.9, ease: 'linear' }}
+            />
+          </div>
         </div>
       )}
     </div>
