@@ -45,7 +45,7 @@ const CSS = `
   top: 0; left: 0;
   z-index: 9999;
   pointer-events: none;
-  width: 20px; height: 20px;
+  width: 15px; height: 15px;
   border-radius: 50%;
   transition: transform .18s ease;
 }
@@ -449,7 +449,7 @@ const HeroSection = () => {
       <div className="hidden md:block"><CursorDot /><AmbientBlob /></div>
 
       {/* TOP BAR */}
-      <motion.div className="hw-top flex gap-2" {...reveal(0.05, 0)}>
+      <motion.div className="hw-top  " {...reveal(0.05, 0)}>
         <span className="hw-logo">Abhishek.dev</span>
         <div className="hw-avail">
           <span className="hw-dot" />

@@ -51,7 +51,7 @@ const SCOPED_CSS = `
   .proj-section,
   .proj-section h1, .proj-section h2, .proj-section h3,
   .proj-section p,  .proj-section span, .proj-section a, .proj-section button {
-    font-family: 'Satoshi', ui-sans-serif, system-ui, sans-serif !important;
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif !important;
     letter-spacing: -0.015em;
   }
   .proj-title {
