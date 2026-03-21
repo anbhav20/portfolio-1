@@ -224,7 +224,7 @@ const ContactSection = () => {
 
             {/* CV */}
             <motion.a
-              href="/assets/AbhishekCV.pdf?v=2"
+              href="/assets/ABHISHEK.pdf?v=2"
               target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-3 w-fit group"
               whileHover={{ x: 4 }}

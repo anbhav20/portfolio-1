@@ -216,7 +216,7 @@ const Header = () => {
 
                   {/* CV */}
                   <motion.a
-                    href="/assets/AbhishekCV.pdf?v=2"
+                    href="/assets/ABHISHEK.pdf?v=2"
                     target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-2.5 py-2 mt-3"
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
