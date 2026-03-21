@@ -13,7 +13,7 @@ const Footer = () => {
   const socials = [
     { label: 'GitHub',    href: 'https://github.com/anbhav20',                          icon: 'fab fa-github'      },
     { label: 'LinkedIn',  href: 'https://www.linkedin.com/in/abhishek-singh-48b18a246', icon: 'fab fa-linkedin-in' },
-    { label: 'Instagram', href: 'https://www.instagram.com/anbhav_19',                  icon: 'fab fa-instagram'   },
+    { label: 'Instagram', href: 'https://www.instagram.com/axl.sql',                  icon: 'fab fa-instagram'   },
   ];
 
   return (
