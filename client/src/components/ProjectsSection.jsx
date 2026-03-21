@@ -1,268 +1,534 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  AnimatePresence,
+} from 'framer-motion';
 
-// Customizable projects array - edit this to add your own projects
 const projects = [
   {
     id: 1,
-    title: "Movie Recommendation & OTT Availability",
-    description: "Search for movies, get recommendations using ML, view trailers, and check OTT availability.",
-    imageUrl: "/assets/images/projects/movie-recommendation.jpg", // Place image in client/public/assets/images/projects/
-    link: "https://movie-recommendation-ml-4ixm.onrender.com",
-    sourceCodeLink: "https://github.com/anbhav20/Movie-Recommendation-ML-2",
-    tags: [  "Flask","Python","JavaScript","Tailwind CSS","TMDB API","Machine Learning" ],
-    
-    delay: 0
+    index: '01',
+    title: 'Movie Recommendation',
+    subtitle: 'ML · Flask · TMDB API',
+    description:
+      'Search for movies, get ML-powered recommendations, view trailers and check OTT availability in real-time.',
+    imageUrl: '/assets/images/projects/movie-recommendation.jpg',
+    link: 'https://movie-recommendation-ml-4ixm.onrender.com',
+    sourceCodeLink: 'https://github.com/anbhav20/Movie-Recommendation-ML-2',
+    tags: ['Flask', 'Python', 'JavaScript', 'Tailwind CSS', 'TMDB API', 'Machine Learning'],
+    color: '#3b82f6',
+    emoji: '🎬',
   },
   {
     id: 2,
-    title: "Personal Portfolio Website",
-    description: "A modern React portfolio showcasing projects and skills with smooth animations and theme switching.",
-    imageUrl: "/assets/images/projects/portfolio.jpg",
-    link: "https://portfolio-1-a01n.onrender.com",
-    sourceCodeLink: "https://github.com/anbhav20/portfolio-1",
-    tags: ["React", "JavaScript", "Vite", "Tailwind CSS", "Shadcn", "Node.js", "Express.js", "AOS", "Nodemailer"],
-    delay: 200
+    index: '02',
+    title: 'Notes App',
+    subtitle: 'MERN · Full Stack',
+    description:
+      'A full-stack CRUD notes application — create, edit, organize and manage notes with a clean UI.',
+    imageUrl: '/assets/images/projects/notes.png',
+    link: 'https://notes-crud-fullstack.onrender.com/',
+    sourceCodeLink: 'https://github.com/anbhav20/notes-crud-fullstack',
+    tags: ['React', 'Node.js', 'Express.js', 'MongoDB', 'JavaScript'],
+    color: '#10b981',
+    emoji: '📝',
   },
   {
     id: 3,
-    title: "CompusConnect(it'll be coming soon)",
-    description: "A feature-rich MERN web app for Indian college students that brings together real-time chat, college‑specific groups, nearby peer discovery, and a verified job/internship board.",
-    imageUrl: "/assets/images/projects/task-manager.jpg",
-    link: "#",
-    sourceCodeLink: "https://github.com/yourusername/task-manager",
-    tags: ["JavaScript", "LocalStorage", "PWA"],
-    delay: 400
-  }
+    index: '03',
+    title: 'CityFriend',
+    subtitle: 'Real-time · Socket.io · Social',
+    description:
+      'A social platform to connect with people in your city, share posts and chat in real-time.',
+    imageUrl: '/assets/images/projects/cityfriend.png',
+    link: 'https://city-friend.vercel.app',
+    sourceCodeLink: 'https://github.com/anbhav20/cityfriend',
+    tags: ['React', 'Node.js', 'Express.js', 'MongoDB', 'Socket.io'],
+    color: '#8b5cf6',
+    emoji: '🌆',
+  },
 ];
 
-// Project Modal Component
-const ProjectModal = ({ project, onClose }) => {
-  if (!project) return null;
+const DECK_SIZE = 5;
+
+// ── Image offset from cursor so cursor stays visible ──────────────────────────
+// Positive X = image appears to the right of cursor
+// Positive Y = image appears below cursor
+const OFFSET_X = 80;
+const OFFSET_Y = -60;
+
+// Each layer gets progressively slower spring — creates the trail spread
+const makeSpring = (i) => ({
+  stiffness: 220 - i * 25,
+  damping:   22 + i * 4,
+  mass:      0.8 + i * 0.3,
+});
+
+const SCOPED_CSS = `
+  .proj-section,
+  .proj-section h1,
+  .proj-section h2,
+  .proj-section h3,
+  .proj-section p,
+  .proj-section span,
+  .proj-section a,
+  .proj-section button {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif !important;
+    letter-spacing: -0.015em;
+  }
+  .proj-title {
+    font-size: clamp(1rem, 2.2vw, 1.6rem);
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    word-break: break-word;
+  }
+  .proj-section-heading {
+    font-size: clamp(2rem, 5.5vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1;
+  }
+  .proj-row-inner {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    align-items: center;
+    gap: 0 1rem;
+    padding: 1.4rem 0;
+    cursor: default;
+    user-select: none;
+  }
+  @media (min-width: 640px) {
+    .proj-row-inner {
+      grid-template-columns: 2.5rem 1fr auto auto auto;
+      gap: 0 1.5rem;
+    }
+  }
+  .proj-row-inner:hover .proj-title { opacity: 0.55; }
+  .proj-subtitle { display: none; }
+  .proj-visit    { display: none; }
+  @media (min-width: 640px) {
+    .proj-subtitle { display: block; }
+    .proj-visit    { display: flex; }
+  }
+`;
+
+// ─── Single deck layer ────────────────────────────────────────────────────────
+const DeckLayer = ({ cursorX, cursorY, index, project, imgFailed, onImgError, visible }) => {
+  // Each layer springs toward the offset cursor position with its own speed
+  const targetX = useMotionValue(-999);
+  const targetY = useMotionValue(-999);
+
+  // Subscribe to cursorX/Y and apply the offset
+  useEffect(() => {
+    const unsubX = cursorX.on('change', (v) => targetX.set(v + OFFSET_X));
+    const unsubY = cursorY.on('change', (v) => targetY.set(v + OFFSET_Y));
+    return () => { unsubX(); unsubY(); };
+  }, [cursorX, cursorY, targetX, targetY]);
+
+  const x = useSpring(targetX, makeSpring(index));
+  const y = useSpring(targetY, makeSpring(index));
+
+  // Back layers smaller + slightly rotated → fan/deck look
+  const scale  = 1 - index * 0.045;
+  const rotate = index % 2 === 0 ? index * 2 : -index * 2;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto relative transition-colors" 
-           onClick={(e) => e.stopPropagation()}>
-        {/* Close Button */}
-        <button 
-          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 z-10 transition-colors"
-          onClick={onClose}
-        >
-          <i className="fas fa-times"></i>
-        </button>
-        
-        {/* Project Image */}
-        <div className="h-64 w-full overflow-hidden">
-          <img 
-            src={project.imageUrl} 
-            alt={project.title} 
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-              const parent = e.currentTarget.parentNode;
-              if (parent) {
-                parent.classList.add('bg-gray-200', 'dark:bg-gray-700', 'flex', 'items-center', 'justify-center');
-                const initial = document.createElement('span');
-                initial.className = 'text-2xl font-bold text-gray-600 dark:text-gray-300';
-                initial.textContent = project.title.charAt(0);
-                parent.appendChild(initial);
-              }
-            }}
-          />
+    <motion.div
+      style={{
+        x, y,
+        position: 'fixed',
+        top: 0, left: 0,
+        width: 280,
+        height: 190,
+        borderRadius: 12,
+        overflow: 'hidden',
+        pointerEvents: 'none',
+        zIndex: 8990 - index,   // below most UI but above page content
+        // Anchor at top-left of the image (not center) so offset is predictable
+        scale,
+        rotate,
+        boxShadow: `0 16px 48px rgba(0,0,0,0.32), 0 0 0 1px rgba(255,255,255,0.06)`,
+        willChange: 'transform',
+      }}
+      animate={{ opacity: visible ? Math.max(0, 1 - index * 0.18) : 0 }}
+      transition={{ opacity: { duration: 0.2 } }}
+    >
+      {imgFailed ? (
+        <div style={{
+          width: '100%', height: '100%',
+          background: `${project.color}18`,
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: 10,
+        }}>
+          <span style={{ fontSize: 40 }}>{project.emoji}</span>
+          <span style={{ fontSize: 12, color: project.color, fontWeight: 600 }}>
+            {project.title}
+          </span>
         </div>
-        
-        {/* Project Details */}
-        <div className="p-6">
-          <h3 className="text-2xl font-bold mb-3 text-gray-800 dark:text-gray-100">{project.title}</h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">{project.description}</p>
-          
-          <div className="mb-6">
-            <h4 className="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">Technologies Used:</h4>
-            <div className="flex flex-wrap gap-2">
-              {project.tags.map((tag, index) => (
-                <span 
-                  key={index}
-                  className="text-sm py-1 px-3 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded-full"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-          
-          <div className="flex flex-wrap gap-3">
-            <a 
-              href={project.link} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <span className="flex items-center">
-                <i className="fas fa-external-link-alt mr-2"></i> Visit Project
-              </span>
-            </a>
-            {project.sourceCodeLink && (
-              <a 
-                href={project.sourceCodeLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-block px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors"
-              >
-                <span className="flex items-center">
-                  <i className="fab fa-github mr-2"></i> View Source Code
-                </span>
-              </a>
-            )}
-          </div>
+      ) : (
+        <img
+          src={project.imageUrl}
+          alt={project.title}
+          onError={onImgError}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+      )}
+      {/* Color bar on front card only */}
+      {index === 0 && (
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0,
+          height: 3, background: project.color,
+        }} />
+      )}
+      {/* Subtle label on front card */}
+      {index === 0 && (
+        <div style={{
+          position: 'absolute', top: 10, left: 12,
+          background: 'rgba(0,0,0,0.55)',
+          backdropFilter: 'blur(4px)',
+          color: '#fff',
+          fontSize: 10,
+          fontWeight: 600,
+          padding: '3px 8px',
+          borderRadius: 6,
+          letterSpacing: '0.05em',
+          fontFamily: 'Inter, sans-serif',
+        }}>
+          {project.subtitle}
         </div>
-      </div>
-    </div>
+      )}
+    </motion.div>
   );
 };
 
-const ProjectsSection = () => {
-  const [selectedProject, setSelectedProject] = useState(null);
-  
-  // Function to handle view project button clicks
-  const handleViewProject = (link, e) => {
-    if (link === "#") {
-      e.preventDefault();
-      alert("This project is still in development. Check back soon!");
-    }
-    // Otherwise let the link navigate as normal
-  };
-  
-  // Function to show project details modal
-  const showProjectDetails = (project) => {
-    setSelectedProject(project);
-  };
-  
-  // Function to close the modal
-  const closeModal = () => {
-    setSelectedProject(null);
-  };
+// ─── Cursor deck (manages shared motion values) ───────────────────────────────
+const CursorDeck = ({ project, visible }) => {
+  const cursorX = useMotionValue(-999);
+  const cursorY = useMotionValue(-999);
+  const [imgFailed, setImgFailed] = useState(false);
+
+  useEffect(() => { setImgFailed(false); }, [project?.id]);
+
+  useEffect(() => {
+    const onMove = (e) => {
+      cursorX.set(e.clientX);
+      cursorY.set(e.clientY);
+    };
+    window.addEventListener('mousemove', onMove);
+    return () => window.removeEventListener('mousemove', onMove);
+  }, [cursorX, cursorY]);
+
+  if (!project) return null;
+
+  // Render back-to-front so layer 0 (front/fastest) is on top
+  return (
+    <>
+      {Array.from({ length: DECK_SIZE }, (_, i) => DECK_SIZE - 1 - i).map((i) => (
+        <DeckLayer
+          key={i}
+          index={i}
+          cursorX={cursorX}
+          cursorY={cursorY}
+          project={project}
+          imgFailed={imgFailed}
+          onImgError={() => setImgFailed(true)}
+          visible={visible}
+        />
+      ))}
+    </>
+  );
+};
+
+// ─── Project row ──────────────────────────────────────────────────────────────
+const ProjectRow = ({ project, index, isLast, onHover, onLeave }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setInView(true); },
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   return (
-    <section id="projects" className="py-20 bg-gradient-to-b from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 transition-colors">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-16 relative text-gray-800 dark:text-gray-100 transition-colors" data-aos="fade-up">
-          My Projects
-          <div className="absolute w-20 h-1 bg-blue-500 bottom-0 left-1/2 transform -translate-x-1/2 mt-2"></div>
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project) => (
-            <div 
-              key={project.id}
-              className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 hover:border-blue-300 dark:hover:border-blue-400 border-2 border-transparent"
-              data-aos="fade-up"
-              data-aos-delay={project.delay}
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 24 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
+    >
+      {/* Top divider */}
+      <motion.div
+        className="h-px bg-gray-200 dark:bg-gray-800"
+        initial={{ scaleX: 0 }}
+        animate={inView ? { scaleX: 1 } : {}}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
+        style={{ transformOrigin: 'left' }}
+      />
+
+      {/* Row */}
+      <motion.div
+        className="proj-row-inner group"
+        onMouseEnter={() => onHover(project)}
+        onMouseLeave={onLeave}
+        onClick={() => setOpen(o => !o)}
+        whileHover={{ x: 6 }}
+        transition={{ type: 'spring', stiffness: 280, damping: 28 }}
+      >
+        {/* Index */}
+        <span className="text-xs font-bold tracking-widest text-gray-400 dark:text-gray-600 tabular-nums">
+          {project.index}
+        </span>
+
+        {/* Title */}
+        <h3 className="proj-title text-gray-900 dark:text-white transition-opacity duration-300">
+          {project.title}
+        </h3>
+
+        {/* Subtitle */}
+        <span className="proj-subtitle text-xs text-gray-400 dark:text-gray-600 font-medium tracking-wide whitespace-nowrap">
+          {project.subtitle}
+        </span>
+
+        {/* Visit */}
+        <a
+          href={project.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="proj-visit items-center gap-1 text-xs font-semibold
+                     text-gray-400 dark:text-gray-600
+                     hover:text-gray-900 dark:hover:text-white
+                     transition-colors duration-200 whitespace-nowrap"
+          onClick={e => e.stopPropagation()}
+        >
+          Visit ↗
+        </a>
+
+        {/* + toggle */}
+        <motion.button
+          className="w-7 h-7 rounded-full border border-gray-300 dark:border-gray-700
+                     flex items-center justify-center shrink-0
+                     text-gray-500 dark:text-gray-400
+                     hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          animate={{ rotate: open ? 45 : 0 }}
+          transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+          onClick={e => { e.stopPropagation(); setOpen(o => !o); }}
+        >
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <line x1="5" y1="1" x2="5" y2="9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <line x1="1" y1="5" x2="9" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+        </motion.button>
+      </motion.div>
+
+      {/* Expandable drawer */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            key="drawer"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            style={{ overflow: 'hidden' }}
+          >
+            <motion.div
+              style={{ paddingBottom: '2rem', paddingLeft: '3.5rem' }}
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 6, opacity: 0 }}
+              transition={{ duration: 0.3, delay: 0.07 }}
             >
-              <div className="h-48 overflow-hidden group">
-                <div 
-                  className="w-full h-full bg-gray-300 dark:bg-gray-700 transform group-hover:scale-110 transition-transform duration-500 flex items-center justify-center relative cursor-pointer"
-                  onClick={() => showProjectDetails(project)}
-                >
-                  <div className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <span className="bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg transform scale-75 group-hover:scale-100 transition-transform">
-                      <i className="fas fa-search mr-2"></i> Quick View
-                    </span>
-                  </div>
-                  {/* Show project thumbnail if available */}
-                  {project.imageUrl.startsWith('/assets') ? (
-                    <img
-                      src={project.imageUrl}
-                      alt={project.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        // If image fails, show project title as fallback
-                        e.currentTarget.style.display = 'none';
-                        const parent = e.currentTarget.parentNode;
-                        if (parent) {
-                          parent.classList.add('flex', 'items-center', 'justify-center');
-                          const titleSpan = document.createElement('span');
-                          titleSpan.className = 'text-gray-600 dark:text-gray-300 font-medium px-4 text-center';
-                          titleSpan.textContent = project.title;
-                          parent.appendChild(titleSpan);
-                        }
-                      }}
-                    />
-                  ) : (
-                    // Use remote image URLs directly
-                    <img
-                      src={project.imageUrl}
-                      alt={project.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        // Fallback for external images too
-                        e.currentTarget.style.display = 'none';
-                        const parent = e.currentTarget.parentNode;
-                        if (parent) {
-                          parent.classList.add('flex', 'items-center', 'justify-center');
-                          const titleSpan = document.createElement('span');
-                          titleSpan.className = 'text-gray-600 dark:text-gray-300 font-medium px-4 text-center';
-                          titleSpan.textContent = project.title;
-                          parent.appendChild(titleSpan);
-                        }
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-gray-800 dark:text-gray-100">{project.title}</h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">{project.description}</p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.tags.map((tag, index) => (
-                    <span 
-                      key={index}
-                      className="text-xs py-1 px-2 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded-full transform transition-all duration-300 hover:scale-110 hover:bg-blue-200 dark:hover:bg-blue-800/40"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <a 
-                    href={project.link} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:translate-y-px hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-                    onClick={(e) => handleViewProject(project.link, e)}
+              <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4 max-w-xl">
+                {project.description}
+              </p>
+
+              <div className="flex flex-wrap gap-2 mb-5">
+                {project.tags.map((tag, i) => (
+                  <motion.span
+                    key={tag}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.08 + i * 0.03 }}
+                    style={{
+                      fontSize: 11, fontWeight: 600,
+                      padding: '3px 10px', borderRadius: 999,
+                      background: `${project.color}14`,
+                      color: project.color,
+                      border: `1px solid ${project.color}28`,
+                    }}
                   >
-                    <span className="flex items-center">
-                      <i className="fas fa-external-link-alt mr-2"></i> View Project
-                    </span>
-                  </a>
-                  {project.sourceCodeLink && (
-                    <a 
-                      href={project.sourceCodeLink} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-block px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-all duration-300 transform hover:translate-y-px hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-opacity-50"
-                    >
-                      <span className="flex items-center">
-                        <i className="fab fa-github mr-2"></i> Source Code
-                      </span>
-                    </a>
-                  )}
-                </div>
+                    {tag}
+                  </motion.span>
+                ))}
               </div>
-            </div>
+
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <motion.a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    padding: '7px 18px', borderRadius: 999,
+                    fontSize: 12, fontWeight: 600,
+                    background: project.color, color: '#fff',
+                    textDecoration: 'none',
+                  }}
+                  whileHover={{ scale: 1.03, y: -1 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <i className="fas fa-external-link-alt" style={{ fontSize: 10 }} />
+                  View Live
+                </motion.a>
+                {project.sourceCodeLink && (
+                  <motion.a
+                    href={project.sourceCodeLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      padding: '7px 18px', borderRadius: 999,
+                      fontSize: 12, fontWeight: 600,
+                      textDecoration: 'none',
+                    }}
+                    whileHover={{ scale: 1.03, y: -1 }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <i className="fab fa-github" style={{ fontSize: 12 }} />
+                    Source Code
+                  </motion.a>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {isLast && (
+        <motion.div
+          className="h-px bg-gray-200 dark:bg-gray-800"
+          initial={{ scaleX: 0 }}
+          animate={inView ? { scaleX: 1 } : {}}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 + 0.1 }}
+          style={{ transformOrigin: 'left' }}
+        />
+      )}
+    </motion.div>
+  );
+};
+
+// ─── Main section ─────────────────────────────────────────────────────────────
+const ProjectsSection = () => {
+  const [hoveredProject, setHoveredProject] = useState(null);
+
+  useEffect(() => {
+    const el = document.createElement('style');
+    el.id = 'proj-scoped-css';
+    el.textContent = SCOPED_CSS;
+    if (!document.getElementById('proj-scoped-css')) {
+      document.head.appendChild(el);
+    }
+    return () => { document.getElementById('proj-scoped-css')?.remove(); };
+  }, []);
+
+  return (
+    <section
+      id="projects"
+      className="proj-section py-20 bg-white dark:bg-gray-950 transition-colors relative overflow-hidden"
+    >
+      {/* Dot grid bg */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.025] dark:opacity-[0.04]"
+        style={{
+          backgroundImage: 'radial-gradient(circle, #94a3b8 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+        }}
+      />
+
+      {/* Image deck — follows cursor with offset */}
+      <CursorDeck project={hoveredProject} visible={!!hoveredProject} />
+
+      <div className="container mx-auto px-5 sm:px-8 md:px-12 relative">
+
+        {/* Header */}
+        <motion.div
+          className="mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <p style={{
+            fontSize: 10, fontWeight: 700, letterSpacing: '0.3em',
+            textTransform: 'uppercase', color: '#9ca3af', marginBottom: 16,
+            fontFamily: 'Inter, sans-serif',
+          }}>
+            Selected work
+          </p>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <h2 className="proj-section-heading text-gray-900 dark:text-white">
+              Projects
+            </h2>
+            <p style={{ fontSize: 11, color: '#9ca3af', maxWidth: 200, lineHeight: 1.7, fontFamily: 'Inter, sans-serif' }}>
+              Hover a row — image preview appears beside your cursor. Click + to expand.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* List */}
+        <div>
+          {projects.map((project, i) => (
+            <ProjectRow
+              key={project.id}
+              project={project}
+              index={i}
+              isLast={i === projects.length - 1}
+              onHover={setHoveredProject}
+              onLeave={() => setHoveredProject(null)}
+            />
           ))}
         </div>
-      </div>
-      
-      {/* Project Modal */}
-      {selectedProject && (
-        <div 
-          className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-4"
-          onClick={closeModal}
+
+        {/* Footer */}
+        <motion.div
+          style={{ marginTop: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
         >
-          <ProjectModal project={selectedProject} onClose={closeModal} />
-        </div>
-      )}
+          <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 500, fontFamily: 'Inter, sans-serif' }}>
+            {projects.length} projects
+          </span>
+          <motion.a
+            href="https://github.com/anbhav20"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              fontSize: 11, fontWeight: 600, color: '#9ca3af',
+              textDecoration: 'none', fontFamily: 'Inter, sans-serif',
+            }}
+            className="hover:text-gray-900 dark:hover:text-white transition-colors"
+            whileHover={{ x: 2 }}
+          >
+            More on GitHub <i className="fab fa-github" />
+          </motion.a>
+        </motion.div>
+      </div>
     </section>
   );
 };

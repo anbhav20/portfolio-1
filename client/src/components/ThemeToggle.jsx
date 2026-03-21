@@ -6,74 +6,79 @@ const ThemeToggle = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Handle clicking outside to close the dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const options = [
+    { value: 'light', icon: 'fas fa-sun', label: 'Light', iconColor: 'text-amber-400' },
+    { value: 'dark', icon: 'fas fa-moon', label: 'Dark', iconColor: 'text-indigo-400' },
+    { value: 'system', icon: 'fas fa-desktop', label: 'System', iconColor: 'text-gray-400 dark:text-gray-300' },
+  ];
 
   return (
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        className="
+          w-9 h-9 rounded-lg
+          border border-gray-200 dark:border-gray-700
+          bg-white dark:bg-gray-800
+          flex items-center justify-center
+          hover:border-blue-400 dark:hover:border-blue-500
+          hover:shadow-md hover:shadow-blue-100 dark:hover:shadow-blue-900/30
+          transition-all duration-200
+          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
+        "
         aria-label="Toggle theme"
         title="Toggle theme"
       >
         {resolvedTheme === 'dark' ? (
-          <i className="fas fa-moon text-yellow-400"></i>
+          <i className="fas fa-moon text-indigo-400 text-sm" />
         ) : (
-          <i className="fas fa-sun text-yellow-500"></i>
+          <i className="fas fa-sun text-amber-500 text-sm" />
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
-          <div className="py-1" role="menu" aria-orientation="vertical">
-            <button
-              onClick={() => { setTheme('light'); setIsOpen(false); }}
-              className={`${
-                theme === 'light' ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400' : ''
-              } w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center transition-colors`}
-              role="menuitem"
-            >
-              <i className="fas fa-sun mr-2 text-yellow-500"></i>
-              Light
-              {theme === 'light' && <i className="fas fa-check ml-auto"></i>}
-            </button>
-            
-            <button
-              onClick={() => { setTheme('dark'); setIsOpen(false); }}
-              className={`${
-                theme === 'dark' ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400' : ''
-              } w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center transition-colors`}
-              role="menuitem"
-            >
-              <i className="fas fa-moon mr-2 text-blue-400"></i>
-              Dark
-              {theme === 'dark' && <i className="fas fa-check ml-auto"></i>}
-            </button>
-            
-            <button
-              onClick={() => { setTheme('system'); setIsOpen(false); }}
-              className={`${
-                theme === 'system' ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400' : ''
-              } w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center transition-colors`}
-              role="menuitem"
-            >
-              <i className="fas fa-desktop mr-2 text-gray-500 dark:text-gray-400"></i>
-              System
-              {theme === 'system' && <i className="fas fa-check ml-auto"></i>}
-            </button>
-          </div>
+        <div className="
+          absolute right-0 mt-2 w-44
+          rounded-xl shadow-xl
+          bg-white dark:bg-gray-900
+          border border-gray-100 dark:border-gray-700/60
+          overflow-hidden z-50
+          animate-[fadeIn_0.15s_ease]
+        ">
+          {options.map(({ value, icon, label, iconColor }) => {
+            const isActive = theme === value;
+            return (
+              <button
+                key={value}
+                onClick={() => { setTheme(value); setIsOpen(false); }}
+                className={`
+                  w-full flex items-center gap-3 px-4 py-2.5 text-sm
+                  transition-colors duration-150
+                  ${isActive
+                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  }
+                `}
+                role="menuitem"
+              >
+                <i className={`${icon} ${iconColor} w-4 text-center`} />
+                <span className="flex-1 text-left">{label}</span>
+                {isActive && (
+                  <i className="fas fa-check text-blue-500 dark:text-blue-400 text-xs" />
+                )}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

@@ -1,8 +1,30 @@
+/** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
-  content: ["./client/index.html", "./client/src/**/*.{js,jsx}"],
+  content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      // ── Fonts ──────────────────────────────────────────────────────────────
+      fontFamily: {
+        sans:    ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['Syne',  'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
+      // ── Tighter font size scale (professional, smaller feel) ───────────────
+      fontSize: {
+        'xs':   ['0.7rem',   { lineHeight: '1rem' }],
+        'sm':   ['0.775rem', { lineHeight: '1.25rem' }],
+        'base': ['0.875rem', { lineHeight: '1.5rem' }],
+        'lg':   ['1rem',     { lineHeight: '1.6rem' }],
+        'xl':   ['1.125rem', { lineHeight: '1.5rem' }],
+        '2xl':  ['1.25rem',  { lineHeight: '1.35rem' }],
+        '3xl':  ['1.5rem',   { lineHeight: '1.25rem' }],
+        '4xl':  ['1.875rem', { lineHeight: '1.15rem' }],
+        '5xl':  ['2.25rem',  { lineHeight: '1.1rem' }],
+        '6xl':  ['3rem',     { lineHeight: '1rem' }],
+        '7xl':  ['3.75rem',  { lineHeight: '1rem' }],
+        '8xl':  ['4.5rem',   { lineHeight: '1rem' }],
+      },
+      // ── Keep ALL existing Shadcn color tokens ──────────────────────────────
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -40,8 +62,8 @@ export default {
           foreground: "hsl(var(--destructive-foreground))",
         },
         border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
+        input:  "hsl(var(--input))",
+        ring:   "hsl(var(--ring))",
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -50,39 +72,35 @@ export default {
           "5": "hsl(var(--chart-5))",
         },
         sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
+          DEFAULT:              "hsl(var(--sidebar-background))",
+          foreground:           "hsl(var(--sidebar-foreground))",
+          primary:              "hsl(var(--sidebar-primary))",
           "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+          accent:               "hsl(var(--sidebar-accent))",
+          "accent-foreground":  "hsl(var(--sidebar-accent-foreground))",
+          border:               "hsl(var(--sidebar-border))",
+          ring:                 "hsl(var(--sidebar-ring))",
         },
       },
+      // ── Keep existing keyframes ────────────────────────────────────────────
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to:   { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to:   { height: "0" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        "accordion-up":   "accordion-up 0.2s ease-out",
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
+  ],
 };

@@ -6,6 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Request logger middleware
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -24,11 +25,9 @@ app.use((req, res, next) => {
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
-
       if (logLine.length > 80) {
         logLine = logLine.slice(0, 79) + "…";
       }
-
       log(logLine);
     }
   });
@@ -39,32 +38,28 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
+  // Global error handler
   app.use((err, _req, res, _next) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-
     res.status(status).json({ message });
-    throw err;
+
+    // Only log unexpected server errors, not 4xx client errors
+    if (status >= 500) {
+      console.error("[server error]", err);
+    }
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
-  // Use environment variable for port or default to 5000
-  // this serves both the API and the client.
-  const port = process.env.PORT || 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0", // Listen on all network interfaces
-    //reusePort: true,
-  }, () => {
+  const port = parseInt(process.env.PORT || "5000", 10);
+
+  server.listen({ port, host: "0.0.0.0" }, () => {
     log(`serving on port ${port}`);
-    log(`CORS enabled for: ${process.env.FRONTEND_URL}, http://localhost:5000`);
+    log(`environment: ${app.get("env")}`);
   });
 })();
