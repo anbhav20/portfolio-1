@@ -1,15 +1,26 @@
 import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import { registerRoutes } from "./routes.js";
 import { setupVite, serveStatic, log } from "./vite.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// ✅ 🔥 FIX: Serve built frontend + assets correctly
+app.use(
+  express.static(path.join(__dirname, "../dist/public"))
+);
+
 // Request logger middleware
 app.use((req, res, next) => {
   const start = Date.now();
-  const path = req.path;
+  const reqPath = req.path;
   let capturedJsonResponse = undefined;
 
   const originalResJson = res.json;
@@ -20,8 +31,8 @@ app.use((req, res, next) => {
 
   res.on("finish", () => {
     const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+    if (reqPath.startsWith("/api")) {
+      let logLine = `${req.method} ${reqPath} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
@@ -44,7 +55,6 @@ app.use((req, res, next) => {
     const message = err.message || "Internal Server Error";
     res.status(status).json({ message });
 
-    // Only log unexpected server errors, not 4xx client errors
     if (status >= 500) {
       console.error("[server error]", err);
     }
@@ -53,7 +63,10 @@ app.use((req, res, next) => {
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
-    serveStatic(app);
+    // production me fallback to index.html (IMPORTANT)
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(__dirname, "../dist/public/index.html"));
+    });
   }
 
   const port = parseInt(process.env.PORT || "5000", 10);
