@@ -451,10 +451,6 @@ const HeroSection = () => {
       {/* TOP BAR */}
       <motion.div className="hw-top  " {...reveal(0.05, 0)}>
         <span className="hw-logo">Abhishek.dev</span>
-        <div className="hw-avail">
-          <span className="hw-dot" />
-          Open to work
-        </div>
       </motion.div>
 
       {/* NAME */}
