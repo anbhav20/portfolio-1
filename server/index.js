@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // ✅ 🔥 FIX: Serve built frontend + assets correctly
 app.use(
-  express.static(path.join(__dirname, "../dist/public"))
+  express.static(path.join(__dirname, "../dist/"))
 );
 
 // Request logger middleware
