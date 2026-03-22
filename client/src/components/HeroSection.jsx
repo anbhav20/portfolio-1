@@ -7,7 +7,7 @@ const profileData = {
   titles:       ['Full Stack Dev.', 'React & Node.', 'Builder.'],
   bio:          "From writing my first 'Hello, World!' to building the next big thing — this is just the beginning.",
   profileImage: '/assets/images/profile.png',
-  cvPath:       '/assets/ABHISHEK.pdf',
+  cvPath:       '/assets/ABHISHEK.pdf?v=2',
   socialLinks: {
     github:   'https://github.com/anbhav20',
     linkedin: 'https://www.linkedin.com/in/abhishek-singh-48b18a246',
@@ -447,11 +447,6 @@ const HeroSection = () => {
   return (
     <section id="about" className="hw pt-10">
       <div className="hidden md:block"><CursorDot /><AmbientBlob /></div>
-
-      {/* TOP BAR */}
-      <motion.div className="hw-top  " {...reveal(0.05, 0)}>
-        <span className="hw-logo">Abhishek.dev</span>
-      </motion.div>
 
       {/* NAME */}
       <div className="hw-name-area">

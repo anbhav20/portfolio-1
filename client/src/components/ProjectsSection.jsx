@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
+import { useTheme } from './ThemeProvider';
 
 const projects = [
   {
@@ -47,51 +48,27 @@ const makeSpring = (i) => ({
   mass:      0.8 + i * 0.3,
 });
 
-const SCOPED_CSS = `
-  .proj-section,
-  .proj-section h1, .proj-section h2, .proj-section h3,
-  .proj-section p,  .proj-section span, .proj-section a, .proj-section button {
-    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif !important;
-    letter-spacing: -0.015em;
-  }
-  .proj-title {
-    font-size: clamp(1rem, 2.2vw, 1.55rem);
-    font-weight: 600;
-    line-height: 1.25;
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: unset !important;
-    word-break: break-word;
-  }
-  .proj-heading {
-    font-size: clamp(2.25rem, 5vw, 3.5rem);
-    font-weight: 700;
-    letter-spacing: -0.035em;
-    line-height: 1;
-  }
-  .proj-row-inner {
-    display: grid;
-    grid-template-columns: 2.5rem 1fr;
-    align-items: center;
-    gap: 0 1rem;
-    padding: 1.35rem 0;
-    cursor: default;
-    user-select: none;
-  }
-  @media (min-width: 640px) {
-    .proj-row-inner {
-      grid-template-columns: 2.5rem 1fr auto auto auto;
-      gap: 0 1.5rem;
-    }
-  }
-  .proj-row-inner:hover .proj-title { opacity: 0.5; }
-  .proj-subtitle, .proj-visit { display: none; }
-  @media (min-width: 640px) {
-    .proj-subtitle { display: block; }
-    .proj-visit    { display: flex;  }
-  }
-`;
+/* ════════════════════════════════════════════════
+   THEME TOKENS — mirrors SkillsSection exactly
+════════════════════════════════════════════════ */
+const tokens = (isDark) => ({
+  sectionBg:       isDark ? '#090909' : '#f5f4f0',
+  heading:         isDark ? '#eeebe4' : '#0a0a0a',
+  muted:           isDark ? '#444'    : '#aaa',
+  rule:            isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+  rowHoverBg:      isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+  indexColor:      isDark ? '#333'    : '#ccc',
+  subtitleColor:   isDark ? '#444'    : '#bbb',
+  visitColor:      isDark ? '#555'    : '#bbb',
+  visitHover:      isDark ? '#eeebe4' : '#0a0a0a',
+  btnBg:           isDark ? '#eeebe4' : '#0a0a0a',
+  btnText:         isDark ? '#090909' : '#f5f4f0',
+  btnBorder:       isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)',
+  btnBorderHover:  isDark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.30)',
+  drawerBg:        isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)',
+});
 
+/* ── Deck layer ── */
 const DeckLayer = ({ cursorX, cursorY, index, project, imgFailed, onImgError, visible }) => {
   const targetX = useMotionValue(-999);
   const targetY = useMotionValue(-999);
@@ -175,7 +152,8 @@ const CursorDeck = ({ project, visible }) => {
   );
 };
 
-const ProjectRow = ({ project, index, isLast, onHover, onLeave }) => {
+/* ── Project row ── */
+const ProjectRow = ({ project, index, isLast, onHover, onLeave, t }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
@@ -197,55 +175,78 @@ const ProjectRow = ({ project, index, isLast, onHover, onLeave }) => {
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
     >
+      {/* top divider */}
       <motion.div
-        className="h-px bg-gray-200 dark:bg-gray-800"
+        style={{ width: '100%', height: 1, background: t.rule, transformOrigin: 'left', transition: 'background 0.3s ease' }}
         initial={{ scaleX: 0 }} animate={inView ? { scaleX: 1 } : {}}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
-        style={{ transformOrigin: 'left' }}
       />
 
       <motion.div
-        className="proj-row-inner group"
         onMouseEnter={() => onHover(project)}
         onMouseLeave={onLeave}
         onClick={() => setOpen(o => !o)}
-        whileHover={{ x: 5 }}
+        whileHover={{ x: 4 }}
         transition={{ type: 'spring', stiffness: 280, damping: 28 }}
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '2.5rem 1fr',
+          alignItems: 'center',
+          gap: '0 1rem',
+          padding: '1.35rem 0.5rem',
+          cursor: 'default',
+          userSelect: 'none',
+          borderRadius: 8,
+          transition: 'background 0.2s ease',
+        }}
+        onMouseOver={e => e.currentTarget.style.background = t.rowHoverBg}
+        onMouseOut={e => e.currentTarget.style.background = 'transparent'}
       >
-        <span className="text-xs font-bold tracking-widest text-gray-400 dark:text-gray-600 tabular-nums">
+        {/* index */}
+        <span style={{
+          fontSize: 10, fontWeight: 700, letterSpacing: '0.2em',
+          color: t.indexColor, fontVariantNumeric: 'tabular-nums',
+          fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
+          transition: 'color 0.3s ease',
+        }}>
           {project.index}
         </span>
-        <h3 className="proj-title text-gray-900 dark:text-white transition-opacity duration-200">
+
+        {/* title */}
+        <h3 style={{
+          fontSize: 'clamp(1rem, 2.2vw, 1.55rem)',
+          fontWeight: 600, lineHeight: 1.25,
+          letterSpacing: '-0.02em',
+          color: t.heading,
+          fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
+          transition: 'color 0.3s ease',
+          margin: 0,
+        }}>
           {project.title}
         </h3>
-        <span className="proj-subtitle text-xs text-gray-400 dark:text-gray-600 font-medium tracking-wide whitespace-nowrap">
-          {project.subtitle}
-        </span>
-        <a
-          href={project.link} target="_blank" rel="noopener noreferrer"
-          className="proj-visit items-center gap-1 text-xs font-semibold
-                     text-gray-400 dark:text-gray-600
-                     hover:text-gray-900 dark:hover:text-white transition-colors whitespace-nowrap"
-          onClick={e => e.stopPropagation()}
-        >
-          Visit ↗
-        </a>
-        <motion.button
-          className="w-7 h-7 rounded-full border border-gray-300 dark:border-gray-700
-                     flex items-center justify-center shrink-0
-                     text-gray-500 dark:text-gray-400
-                     hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          animate={{ rotate: open ? 45 : 0 }}
-          transition={{ type: 'spring', stiffness: 320, damping: 24 }}
-          onClick={e => { e.stopPropagation(); setOpen(o => !o); }}
-        >
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-            <line x1="5" y1="1" x2="5" y2="9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            <line x1="1" y1="5" x2="9" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-          </svg>
-        </motion.button>
       </motion.div>
 
+      {/* expanded desktop row — subtitle + visit + toggle */}
+      <div style={{
+        display: 'none',
+        position: 'relative', marginTop: -52, paddingRight: '0.5rem',
+        justifyContent: 'flex-end', alignItems: 'center', gap: '1.5rem',
+        pointerEvents: 'none',
+      }}
+        className="proj-desktop-row"
+      />
+
+      {/* simpler: keep original grid on desktop via inline media */}
+      <style>{`
+        @media (min-width: 640px) {
+          .proj-row-${project.id} {
+            grid-template-columns: 2.5rem 1fr auto auto auto !important;
+            gap: 0 1.5rem !important;
+          }
+        }
+      `}</style>
+
+      {/* drawer */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -256,15 +257,25 @@ const ProjectRow = ({ project, index, isLast, onHover, onLeave }) => {
             style={{ overflow: 'hidden' }}
           >
             <motion.div
-              style={{ paddingBottom: '2rem', paddingLeft: '3.5rem' }}
+              style={{
+                paddingBottom: '2rem', paddingLeft: '3.5rem', paddingTop: '0.75rem',
+                background: t.drawerBg, borderRadius: '0 0 8px 8px',
+              }}
               initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
               exit={{ y: 6, opacity: 0 }}
               transition={{ duration: 0.3, delay: 0.07 }}
             >
-              <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4 max-w-xl">
+              <p style={{
+                color: t.muted, fontSize: 13, lineHeight: 1.9,
+                marginBottom: '1rem', maxWidth: 480,
+                fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
+                transition: 'color 0.3s ease',
+              }}>
                 {project.description}
               </p>
-              <div className="flex flex-wrap gap-2 mb-5">
+
+              {/* tags */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: '1.25rem' }}>
                 {project.tags.map((tag, i) => (
                   <motion.span key={tag}
                     initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
@@ -272,13 +283,16 @@ const ProjectRow = ({ project, index, isLast, onHover, onLeave }) => {
                     style={{
                       fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 999,
                       background: `${project.color}14`, color: project.color,
-                      border: `1px solid ${project.color}28`,
+                      border: `1px solid ${project.color}30`,
+                      fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
                     }}
                   >
                     {tag}
                   </motion.span>
                 ))}
               </div>
+
+              {/* buttons */}
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 <motion.a
                   href={project.link} target="_blank" rel="noopener noreferrer"
@@ -286,6 +300,7 @@ const ProjectRow = ({ project, index, isLast, onHover, onLeave }) => {
                     display: 'inline-flex', alignItems: 'center', gap: 6,
                     padding: '7px 18px', borderRadius: 999, fontSize: 12, fontWeight: 600,
                     background: project.color, color: '#fff', textDecoration: 'none',
+                    fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
                   }}
                   whileHover={{ scale: 1.03, y: -1 }} whileTap={{ scale: 0.97 }}
                 >
@@ -294,11 +309,12 @@ const ProjectRow = ({ project, index, isLast, onHover, onLeave }) => {
                 {project.sourceCodeLink && (
                   <motion.a
                     href={project.sourceCodeLink} target="_blank" rel="noopener noreferrer"
-                    className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900"
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 6,
                       padding: '7px 18px', borderRadius: 999, fontSize: 12, fontWeight: 600,
-                      textDecoration: 'none',
+                      background: t.btnBg, color: t.btnText, textDecoration: 'none',
+                      fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
+                      transition: 'background 0.3s, color 0.3s',
                     }}
                     whileHover={{ scale: 1.03, y: -1 }} whileTap={{ scale: 0.97 }}
                   >
@@ -311,62 +327,96 @@ const ProjectRow = ({ project, index, isLast, onHover, onLeave }) => {
         )}
       </AnimatePresence>
 
+      {/* last row bottom divider */}
       {isLast && (
         <motion.div
-          className="h-px bg-gray-200 dark:bg-gray-800"
+          style={{ width: '100%', height: 1, background: t.rule, transformOrigin: 'left', transition: 'background 0.3s ease' }}
           initial={{ scaleX: 0 }} animate={inView ? { scaleX: 1 } : {}}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 + 0.1 }}
-          style={{ transformOrigin: 'left' }}
         />
       )}
     </motion.div>
   );
 };
 
+/* ════════════ MAIN ════════════ */
 const ProjectsSection = () => {
-  const [hoveredProject, setHoveredProject] = useState(null);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
+  const t = tokens(isDark);
 
-  useEffect(() => {
-    const el = document.createElement('style');
-    el.id = 'proj-scoped-css';
-    el.textContent = SCOPED_CSS;
-    if (!document.getElementById('proj-scoped-css')) document.head.appendChild(el);
-    return () => document.getElementById('proj-scoped-css')?.remove();
-  }, []);
+  const [hoveredProject, setHoveredProject] = useState(null);
 
   return (
     <section
       id="projects"
-      className="proj-section bg-white dark:bg-gray-950 transition-colors relative overflow-hidden"
-      style={{ paddingTop: 'var(--section-py)', paddingBottom: 'var(--section-py)' }}
+      className="relative overflow-hidden"
+      style={{
+        background: t.sectionBg,
+        paddingTop: 'var(--section-py)',
+        paddingBottom: 'var(--section-py)',
+        transition: 'background-color 0.3s ease',
+      }}
     >
-      {/* Dot grid */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.022] dark:opacity-[0.04]"
-           style={{ backgroundImage: 'radial-gradient(circle, #94a3b8 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+      <style>{`
+        #projects { background-color: ${t.sectionBg} !important; transition: background-color 0.3s ease !important; }
+      `}</style>
+
+      {/* ambient dot */}
+      <div style={{
+        position: 'absolute', top: '30%', left: '60%',
+        transform: 'translate(-50%,-50%)',
+        width: 400, height: 400, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(59,130,246,0.055) 0%, transparent 70%)',
+        filter: 'blur(60px)', pointerEvents: 'none',
+        opacity: isDark ? 0.12 : 0.18,
+      }} />
 
       <CursorDeck project={hoveredProject} visible={!!hoveredProject} />
 
-      {/* ── Same section-wrap as every other section ── */}
-      <div className="section-wrap relative">
+      <div className="section-wrap" style={{ position: 'relative', zIndex: 10 }}>
 
         {/* Header */}
         <motion.div
-          className="mb-12"
+          style={{ marginBottom: '3rem' }}
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#9ca3af', marginBottom: 14 }}>
+          <p style={{
+            fontSize: 10, fontWeight: 700, letterSpacing: '0.3em',
+            textTransform: 'uppercase', color: '#3b82f6', marginBottom: 12,
+            fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
+          }}>
             Selected work
           </p>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-            <h2 className="proj-heading text-gray-900 dark:text-white">Projects</h2>
-            <p style={{ fontSize: 11, color: '#9ca3af', maxWidth: 200, lineHeight: 1.7 }}>
-              Hover a row to preview. Click + to expand.
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, marginBottom: 28 }}>
+            <h2 style={{
+              fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
+              fontWeight: 400,
+              fontSize: 'clamp(27px, 3vw, 50px)',
+              letterSpacing: '-0.04em',
+              lineHeight: 0.87,
+              color: t.heading,
+              margin: 0,
+              transition: 'color 0.3s ease',
+            }}>
+              PROJECTS
+            </h2>
+            <p style={{
+              fontSize: 11, color: t.muted, maxWidth: 200, lineHeight: 1.7,
+              fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
+              transition: 'color 0.3s ease',
+            }}>
+              Hover a row to preview.<br />Click to expand.
             </p>
           </div>
+
+          {/* divider */}
+          <div style={{ width: '100%', height: 1, background: t.rule, transition: 'background 0.3s ease' }} />
         </motion.div>
 
-        {/* List */}
+        {/* Project list */}
         <div>
           {projects.map((project, i) => (
             <ProjectRow
@@ -374,23 +424,35 @@ const ProjectsSection = () => {
               isLast={i === projects.length - 1}
               onHover={setHoveredProject}
               onLeave={() => setHoveredProject(null)}
+              t={t}
             />
           ))}
         </div>
 
         {/* Footer */}
         <motion.div
-          style={{ marginTop: 40, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+          style={{ marginTop: 32, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
           initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
           viewport={{ once: true }} transition={{ delay: 0.3 }}
         >
-          <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 500 }}>
+          <span style={{
+            fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase',
+            color: t.muted, fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
+            transition: 'color 0.3s ease',
+          }}>
             {projects.length} projects
           </span>
           <motion.a
             href="https://github.com/anbhav20" target="_blank" rel="noopener noreferrer"
-            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, color: '#9ca3af', textDecoration: 'none' }}
-            className="hover:text-gray-900 dark:hover:text-white transition-colors"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              fontSize: 11, fontWeight: 600, color: t.muted,
+              textDecoration: 'none',
+              fontFamily: 'Satoshi, ui-sans-serif, sans-serif',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = t.heading}
+            onMouseLeave={e => e.currentTarget.style.color = t.muted}
             whileHover={{ x: 2 }}
           >
             More on GitHub <i className="fab fa-github" />

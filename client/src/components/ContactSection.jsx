@@ -1,12 +1,38 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { validateForm } from '@/lib/formValidation';
+import { useTheme } from './ThemeProvider';
+
+const tokens = (isDark) => ({
+  sectionBg:    isDark ? '#090909' : '#f5f4f0',
+  heading:      isDark ? '#eeebe4' : '#0a0a0a',
+  subheading:   isDark ? '#aaa'    : '#555',
+  muted:        isDark ? '#444'    : '#aaa',
+  rule:         isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+  inputBorder:  isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)',
+  inputFocus:   isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)',
+  inputText:    isDark ? '#eeebe4' : '#0a0a0a',
+  placeholder:  isDark ? '#444'    : '#bbb',
+  labelColor:   isDark ? '#555'    : '#aaa',
+  btnBg:        isDark ? '#eeebe4' : '#0a0a0a',
+  btnText:      isDark ? '#090909' : '#f5f4f0',
+  linkHover:    isDark ? '#eeebe4' : '#0a0a0a',
+  successBg:    isDark ? 'rgba(34,197,94,0.08)' : 'rgba(34,197,94,0.06)',
+  successBorder:isDark ? 'rgba(34,197,94,0.20)' : 'rgba(34,197,94,0.20)',
+});
+
+const SF = 'Satoshi, ui-sans-serif, system-ui, sans-serif';
 
 const ContactSection = () => {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
+  const t = tokens(isDark);
+
   const [formData, setFormData]       = useState({ name: '', email: '', message: '' });
   const [errors, setErrors]           = useState({});
   const [isSubmitting, setSubmitting] = useState(false);
   const [success, setSuccess]         = useState(false);
+  const [focused, setFocused]         = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,129 +69,185 @@ const ContactSection = () => {
     setTimeout(() => setSuccess(false), 5000);
   };
 
-  const inputBase = `w-full bg-transparent border-b py-3 text-sm text-gray-900 dark:text-white
-    placeholder-gray-400 dark:placeholder-gray-600
-    outline-none focus:outline-none ring-0 focus:ring-0 transition-colors duration-200`;
+  const inputStyle = (name) => ({
+    width: '100%',
+    background: 'transparent',
+    border: 'none',
+    borderBottom: `1px solid ${errors[name] ? '#ef4444' : focused === name ? t.inputFocus : t.inputBorder}`,
+    padding: '10px 0',
+    fontSize: 14,
+    fontFamily: SF,
+    color: t.inputText,
+    outline: 'none',
+    transition: 'border-color 0.2s ease',
+    caretColor: '#3b82f6',
+  });
+
+  const labelStyle = {
+    display: 'block',
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: '0.2em',
+    textTransform: 'uppercase',
+    color: t.labelColor,
+    marginBottom: 8,
+    fontFamily: SF,
+    transition: 'color 0.3s ease',
+  };
 
   return (
     <section
       id="contact"
-      className="bg-white dark:bg-gray-950 transition-colors"
-      style={{ paddingTop: 'var(--section-py)', paddingBottom: 'var(--section-py)' }}
+      style={{
+        background: t.sectionBg,
+        paddingTop: 'var(--section-py)',
+        paddingBottom: 'var(--section-py)',
+        transition: 'background-color 0.3s ease',
+      }}
     >
       <div className="section-wrap">
 
         {/* ── Header ── */}
-        <motion.div className="mb-14"
+        <motion.div
+          style={{ marginBottom: '3.5rem' }}
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-blue-500 dark:text-blue-400 mb-4"
-             style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>Get in touch</p>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <h2 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white leading-none"
-                style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif', letterSpacing: '-0.04em' }}>
-              Let's talk.
+          viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <p style={{
+            fontSize: 10, fontWeight: 700, letterSpacing: '0.3em',
+            textTransform: 'uppercase', color: '#3b82f6',
+            marginBottom: 12, fontFamily: SF,
+          }}>
+            Get in touch
+          </p>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, marginBottom: 28 }}>
+            <h2 style={{
+              fontFamily: SF,
+              fontWeight: 400,
+              fontSize: 'clamp(27px, 3vw, 50px)',
+              letterSpacing: '-0.04em',
+              lineHeight: 0.87,
+              color: t.heading,
+              margin: 0,
+              transition: 'color 0.3s ease',
+            }}>
+              LET'S TALK.
             </h2>
-            <p className="text-sm text-gray-400 dark:text-gray-600 max-w-xs leading-relaxed"
-               style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>
+            <p style={{
+              fontSize: 11, color: t.muted, maxWidth: 220, lineHeight: 1.7,
+              fontFamily: SF, transition: 'color 0.3s ease',
+            }}>
               Always open to new opportunities, collaborations, or just a good conversation.
             </p>
           </div>
+
+          {/* divider */}
+          <div style={{ width: '100%', height: 1, background: t.rule, transition: 'background 0.3s ease' }} />
         </motion.div>
 
         {/* ── Two column layout ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: 'clamp(2.5rem, 6vw, 6rem)',
+        }}>
 
           {/* Left — form */}
           <motion.div
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
-
+            viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
             <AnimatePresence>
               {success && (
                 <motion.div
                   initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="mb-8 p-4 rounded-xl border border-green-500/20 bg-green-500/8 text-green-500 text-sm"
-                  style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>
+                  style={{
+                    marginBottom: '2rem', padding: '1rem 1.25rem',
+                    borderRadius: 12,
+                    border: `1px solid ${t.successBorder}`,
+                    background: t.successBg,
+                    color: '#22c55e',
+                    fontSize: 13, fontFamily: SF,
+                  }}
+                >
                   Message sent — I'll get back to you soon ✓
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
               {/* Name */}
               <div>
-                <label className="block text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 dark:text-gray-600 mb-2"
-                       style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>Your Name</label>
+                <label style={labelStyle}>Your Name</label>
                 <input
                   type="text" name="name" value={formData.name} onChange={handleChange}
                   placeholder="Abhishek Singh"
-                  className={`${inputBase} ${errors.name
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-gray-200 dark:border-gray-800 focus:border-gray-400 dark:focus:border-gray-700'
-                  }`}
-                  style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}
+                  onFocus={() => setFocused('name')} onBlur={() => setFocused(null)}
+                  style={{ ...inputStyle('name'), '::placeholder': { color: t.placeholder } }}
                 />
-                {errors.name && <p className="mt-1.5 text-xs text-red-500" style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>{errors.name}</p>}
+                {errors.name && (
+                  <p style={{ marginTop: 6, fontSize: 11, color: '#ef4444', fontFamily: SF }}>{errors.name}</p>
+                )}
               </div>
 
               {/* Email */}
               <div>
-                <label className="block text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 dark:text-gray-600 mb-2"
-                       style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>Email Address</label>
+                <label style={labelStyle}>Email Address</label>
                 <input
                   type="email" name="email" value={formData.email} onChange={handleChange}
                   placeholder="you@example.com"
-                  className={`${inputBase} ${errors.email
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-gray-200 dark:border-gray-800 focus:border-gray-400 dark:focus:border-gray-700'
-                  }`}
-                  style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}
+                  onFocus={() => setFocused('email')} onBlur={() => setFocused(null)}
+                  style={inputStyle('email')}
                 />
-                {errors.email && <p className="mt-1.5 text-xs text-red-500" style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>{errors.email}</p>}
+                {errors.email && (
+                  <p style={{ marginTop: 6, fontSize: 11, color: '#ef4444', fontFamily: SF }}>{errors.email}</p>
+                )}
               </div>
 
               {/* Message */}
               <div>
-                <label className="block text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 dark:text-gray-600 mb-2"
-                       style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>Message</label>
+                <label style={labelStyle}>Message</label>
                 <textarea
                   name="message" value={formData.message} onChange={handleChange}
                   placeholder="Tell me about your project..."
                   rows={4}
-                  className={`${inputBase} resize-none ${errors.message
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-gray-200 dark:border-gray-800 focus:border-gray-400 dark:focus:border-gray-700'
-                  }`}
-                  style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}
+                  onFocus={() => setFocused('message')} onBlur={() => setFocused(null)}
+                  style={{ ...inputStyle('message'), resize: 'none' }}
                 />
-                {errors.message && <p className="mt-1.5 text-xs text-red-500" style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>{errors.message}</p>}
+                {errors.message && (
+                  <p style={{ marginTop: 6, fontSize: 11, color: '#ef4444', fontFamily: SF }}>{errors.message}</p>
+                )}
               </div>
 
               {/* Submit */}
               <motion.button
                 type="submit"
                 disabled={isSubmitting}
-                className="group flex items-center gap-3"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                }}
                 whileHover={{ x: 4 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 28 }}
               >
-                <span
-                  className="w-11 h-11 rounded-full flex items-center justify-center
-                             bg-gray-900 dark:bg-white
-                             text-white dark:text-gray-900
-                             group-hover:scale-110 transition-transform duration-200"
-                >
+                <span style={{
+                  width: 44, height: 44, borderRadius: '50%',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: t.btnBg, color: t.btnText,
+                  transition: 'background 0.3s, color 0.3s, transform 0.2s',
+                  flexShrink: 0,
+                }}>
                   {isSubmitting
-                    ? <svg className="animate-spin" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    ? <svg style={{ animation: 'spin 1s linear infinite' }} width="14" height="14" viewBox="0 0 14 14" fill="none">
                         <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" strokeDasharray="8 8"/>
+                        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                       </svg>
                     : <span style={{ fontSize: 16 }}>→</span>
                   }
                 </span>
-                <span className="text-sm font-semibold text-gray-900 dark:text-white"
-                      style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: t.heading, fontFamily: SF, transition: 'color 0.3s ease' }}>
                   {isSubmitting ? 'Sending…' : 'Send message'}
                 </span>
               </motion.button>
@@ -174,48 +256,59 @@ const ContactSection = () => {
 
           {/* Right — contact info */}
           <motion.div
-            className="flex flex-col justify-center gap-10"
+            style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2.5rem' }}
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}>
+            viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+          >
 
             {/* Email */}
             <div>
-              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 dark:text-gray-600 mb-2"
-                 style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>Email</p>
-              <motion.a href="mailto:spidey.9449@gmail.com"
-                className="text-lg font-medium text-gray-900 dark:text-white hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
-                style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif', letterSpacing: '-0.02em' }}
-                whileHover={{ x: 4 }}>
+              <p style={{ ...labelStyle, marginBottom: 8 }}>Email</p>
+              <motion.a
+                href="mailto:spidey.9449@gmail.com"
+                style={{
+                  fontSize: 16, fontWeight: 500, color: t.heading,
+                  fontFamily: SF, letterSpacing: '-0.02em',
+                  textDecoration: 'none', transition: 'color 0.2s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = '#3b82f6'}
+                onMouseLeave={e => e.currentTarget.style.color = t.heading}
+                whileHover={{ x: 4 }}
+              >
                 spidey.9449@gmail.com ↗
               </motion.a>
             </div>
 
             {/* Location */}
             <div>
-              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 dark:text-gray-600 mb-2"
-                 style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>Location</p>
-              <p className="text-lg font-medium text-gray-900 dark:text-white"
-                 style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif', letterSpacing: '-0.02em' }}>
+              <p style={{ ...labelStyle, marginBottom: 8 }}>Location</p>
+              <p style={{ fontSize: 16, fontWeight: 500, color: t.heading, fontFamily: SF, letterSpacing: '-0.02em', transition: 'color 0.3s ease' }}>
                 New Delhi, India
               </p>
             </div>
 
             {/* Socials */}
             <div>
-              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 dark:text-gray-600 mb-4"
-                 style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>Socials</p>
-              <div className="flex flex-col gap-2">
+              <p style={{ ...labelStyle, marginBottom: 12 }}>Socials</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {[
                   { label: 'GitHub',    href: 'https://github.com/anbhav20' },
                   { label: 'LinkedIn',  href: 'https://www.linkedin.com/in/abhishek-singh-48b18a246' },
                   { label: 'Instagram', href: 'https://www.instagram.com/anbhav_19' },
                 ].map(({ label, href }) => (
-                  <motion.a key={label} href={href} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-500
-                               hover:text-gray-900 dark:hover:text-white transition-colors w-fit"
-                    style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}
-                    whileHover={{ x: 5 }}>
-                    <span className="w-1 h-1 rounded-full bg-current opacity-50" />
+                  <motion.a
+                    key={label} href={href} target="_blank" rel="noopener noreferrer"
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      fontSize: 13, fontWeight: 500, color: t.muted,
+                      fontFamily: SF, textDecoration: 'none',
+                      transition: 'color 0.2s', width: 'fit-content',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.color = t.heading}
+                    onMouseLeave={e => e.currentTarget.style.color = t.muted}
+                    whileHover={{ x: 5 }}
+                  >
+                    <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'currentColor', opacity: 0.5, flexShrink: 0 }} />
                     {label}
                   </motion.a>
                 ))}
@@ -224,25 +317,39 @@ const ContactSection = () => {
 
             {/* CV */}
             <motion.a
-              href="/assets/ABHISHEK.pdf?v=2"
+              href="/assets/ABHISHEK.pdf"
               target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 w-fit group"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 12, width: 'fit-content', textDecoration: 'none' }}
               whileHover={{ x: 4 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+              onMouseEnter={e => {
+                e.currentTarget.querySelector('.cv-icon').style.borderColor = t.heading;
+                e.currentTarget.querySelector('.cv-icon').style.color = t.heading;
+                e.currentTarget.querySelector('.cv-label').style.color = t.heading;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.querySelector('.cv-icon').style.borderColor = t.inputBorder;
+                e.currentTarget.querySelector('.cv-icon').style.color = t.muted;
+                e.currentTarget.querySelector('.cv-label').style.color = t.muted;
+              }}
             >
-              <span className="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-800
-                               flex items-center justify-center text-gray-500 dark:text-gray-500
-                               group-hover:border-gray-900 dark:group-hover:border-white
-                               group-hover:text-gray-900 dark:group-hover:text-white
-                               transition-all duration-200 text-xs">
+              <span className="cv-icon" style={{
+                width: 40, height: 40, borderRadius: '50%',
+                border: `1px solid ${t.inputBorder}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: t.muted, fontSize: 12, flexShrink: 0,
+                transition: 'border-color 0.2s, color 0.2s',
+              }}>
                 <i className="fas fa-file-alt" />
               </span>
-              <span className="text-sm font-medium text-gray-500 dark:text-gray-500
-                               group-hover:text-gray-900 dark:group-hover:text-white transition-colors"
-                    style={{ fontFamily: 'Satoshi, ui-sans-serif, sans-serif' }}>
+              <span className="cv-label" style={{
+                fontSize: 13, fontWeight: 500, color: t.muted,
+                fontFamily: SF, transition: 'color 0.2s',
+              }}>
                 Download CV
               </span>
             </motion.a>
+
           </motion.div>
         </div>
       </div>
