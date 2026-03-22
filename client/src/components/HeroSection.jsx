@@ -7,7 +7,7 @@ const profileData = {
   titles:       ['Full Stack Dev.', 'React & Node.', 'Builder.'],
   bio:          "From writing my first 'Hello, World!' to building the next big thing — this is just the beginning.",
   profileImage: '/assets/images/profile.png',
-  cvPath:       '/assets/ABHISHEK.pdf?v=2',
+  cvPath:       '/assets/ABHISHEK.pdf',
   socialLinks: {
     github:   'https://github.com/anbhav20',
     linkedin: 'https://www.linkedin.com/in/abhishek-singh-48b18a246',
