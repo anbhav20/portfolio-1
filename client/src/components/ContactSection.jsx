@@ -1,27 +1,43 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { validateForm } from '@/lib/formValidation';
+import emailjs from '@emailjs/browser';
 import { useTheme } from './ThemeProvider';
 
+const EMAILJS_SERVICE_ID  = 'service_o4djte4';
+const EMAILJS_TEMPLATE_ID = 'template_hs99fgq';
+const EMAILJS_PUBLIC_KEY  = 'NOjvWxUdOigS4ijvh';
+
 const tokens = (isDark) => ({
-  sectionBg:    isDark ? '#090909' : '#f5f4f0',
-  heading:      isDark ? '#eeebe4' : '#0a0a0a',
-  subheading:   isDark ? '#aaa'    : '#555',
-  muted:        isDark ? '#444'    : '#aaa',
-  rule:         isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
-  inputBorder:  isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)',
-  inputFocus:   isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)',
-  inputText:    isDark ? '#eeebe4' : '#0a0a0a',
-  placeholder:  isDark ? '#444'    : '#bbb',
-  labelColor:   isDark ? '#555'    : '#aaa',
-  btnBg:        isDark ? '#eeebe4' : '#0a0a0a',
-  btnText:      isDark ? '#090909' : '#f5f4f0',
-  linkHover:    isDark ? '#eeebe4' : '#0a0a0a',
-  successBg:    isDark ? 'rgba(34,197,94,0.08)' : 'rgba(34,197,94,0.06)',
-  successBorder:isDark ? 'rgba(34,197,94,0.20)' : 'rgba(34,197,94,0.20)',
+  sectionBg:     isDark ? '#090909' : '#f5f4f0',
+  heading:       isDark ? '#eeebe4' : '#0a0a0a',
+  subheading:    isDark ? '#aaa'    : '#555',
+  muted:         isDark ? '#444'    : '#aaa',
+  rule:          isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+  inputBorder:   isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)',
+  inputFocus:    isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)',
+  inputText:     isDark ? '#eeebe4' : '#0a0a0a',
+  placeholder:   isDark ? '#444'    : '#bbb',
+  labelColor:    isDark ? '#555'    : '#aaa',
+  btnBg:         isDark ? '#eeebe4' : '#0a0a0a',
+  btnText:       isDark ? '#090909' : '#f5f4f0',
+  linkHover:     isDark ? '#eeebe4' : '#0a0a0a',
+  successBg:     isDark ? 'rgba(34,197,94,0.08)'  : 'rgba(34,197,94,0.06)',
+  successBorder: isDark ? 'rgba(34,197,94,0.20)'  : 'rgba(34,197,94,0.20)',
+  errorBg:       isDark ? 'rgba(239,68,68,0.08)'  : 'rgba(239,68,68,0.06)',
+  errorBorder:   isDark ? 'rgba(239,68,68,0.20)'  : 'rgba(239,68,68,0.20)',
 });
 
 const SF = 'Satoshi, ui-sans-serif, system-ui, sans-serif';
+
+const validate = ({ name, email, message }) => {
+  const errs = {};
+  if (!name.trim())                            errs.name    = 'Name is required';
+  if (!email.trim())                           errs.email   = 'Email is required';
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = 'Invalid email';
+  if (!message.trim())                         errs.message = 'Message is required';
+  else if (message.trim().length < 10)         errs.message = 'Message too short';
+  return errs;
+};
 
 const ContactSection = () => {
   const { resolvedTheme } = useTheme();
@@ -31,7 +47,7 @@ const ContactSection = () => {
   const [formData, setFormData]       = useState({ name: '', email: '', message: '' });
   const [errors, setErrors]           = useState({});
   const [isSubmitting, setSubmitting] = useState(false);
-  const [success, setSuccess]         = useState(false);
+  const [status, setStatus]           = useState(null); // 'success' | 'error'
   const [focused, setFocused]         = useState(null);
 
   const handleChange = (e) => {
@@ -42,31 +58,33 @@ const ContactSection = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const errs = validateForm(formData);
+    const errs = validate(formData);
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+
     setSubmitting(true);
+    setStatus(null);
+
     try {
-      try {
-        const res = await fetch('/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
-        if (res.ok) { done(); return; }
-      } catch (_) {}
-      await new Promise(r => setTimeout(r, 800));
-      done();
-    } catch {
-      setErrors({ message: 'Network error. Please try again.' });
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          name:    formData.name,
+          email:   formData.email,
+          message: formData.message,
+        },
+        EMAILJS_PUBLIC_KEY
+      );
+      setStatus('success');
+      setFormData({ name: '', email: '', message: '' });
+      setTimeout(() => setStatus(null), 5000);
+    } catch (err) {
+      console.error('EmailJS error:', err);
+      setStatus('error');
+      setTimeout(() => setStatus(null), 5000);
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const done = () => {
-    setSuccess(true);
-    setFormData({ name: '', email: '', message: '' });
-    setTimeout(() => setSuccess(false), 5000);
   };
 
   const inputStyle = (name) => ({
@@ -123,14 +141,10 @@ const ContactSection = () => {
 
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, marginBottom: 28 }}>
             <h2 style={{
-              fontFamily: SF,
-              fontWeight: 400,
+              fontFamily: SF, fontWeight: 400,
               fontSize: 'clamp(27px, 3vw, 50px)',
-              letterSpacing: '-0.04em',
-              lineHeight: 0.87,
-              color: t.heading,
-              margin: 0,
-              transition: 'color 0.3s ease',
+              letterSpacing: '-0.04em', lineHeight: 0.87,
+              color: t.heading, margin: 0, transition: 'color 0.3s ease',
             }}>
               LET'S TALK.
             </h2>
@@ -142,7 +156,6 @@ const ContactSection = () => {
             </p>
           </div>
 
-          {/* divider */}
           <div style={{ width: '100%', height: 1, background: t.rule, transition: 'background 0.3s ease' }} />
         </motion.div>
 
@@ -158,20 +171,32 @@ const ContactSection = () => {
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
+            {/* Status banners */}
             <AnimatePresence>
-              {success && (
+              {status === 'success' && (
                 <motion.div
+                  key="success"
                   initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                   style={{
-                    marginBottom: '2rem', padding: '1rem 1.25rem',
-                    borderRadius: 12,
-                    border: `1px solid ${t.successBorder}`,
-                    background: t.successBg,
-                    color: '#22c55e',
-                    fontSize: 13, fontFamily: SF,
+                    marginBottom: '2rem', padding: '1rem 1.25rem', borderRadius: 12,
+                    border: `1px solid ${t.successBorder}`, background: t.successBg,
+                    color: '#22c55e', fontSize: 13, fontFamily: SF,
                   }}
                 >
                   Message sent — I'll get back to you soon ✓
+                </motion.div>
+              )}
+              {status === 'error' && (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  style={{
+                    marginBottom: '2rem', padding: '1rem 1.25rem', borderRadius: 12,
+                    border: `1px solid ${t.errorBorder}`, background: t.errorBg,
+                    color: '#ef4444', fontSize: 13, fontFamily: SF,
+                  }}
+                >
+                  Something went wrong. Please try again or email me directly.
                 </motion.div>
               )}
             </AnimatePresence>
@@ -182,10 +207,10 @@ const ContactSection = () => {
               <div>
                 <label style={labelStyle}>Your Name</label>
                 <input
-                  type="text" name="name" value={formData.name} onChange={handleChange}
-                  placeholder="Abhishek Singh"
+                  type="text" name="name" value={formData.name}
+                  onChange={handleChange} placeholder="Abhishek Singh"
                   onFocus={() => setFocused('name')} onBlur={() => setFocused(null)}
-                  style={{ ...inputStyle('name'), '::placeholder': { color: t.placeholder } }}
+                  style={inputStyle('name')}
                 />
                 {errors.name && (
                   <p style={{ marginTop: 6, fontSize: 11, color: '#ef4444', fontFamily: SF }}>{errors.name}</p>
@@ -196,8 +221,8 @@ const ContactSection = () => {
               <div>
                 <label style={labelStyle}>Email Address</label>
                 <input
-                  type="email" name="email" value={formData.email} onChange={handleChange}
-                  placeholder="you@example.com"
+                  type="email" name="email" value={formData.email}
+                  onChange={handleChange} placeholder="you@example.com"
                   onFocus={() => setFocused('email')} onBlur={() => setFocused(null)}
                   style={inputStyle('email')}
                 />
@@ -210,8 +235,8 @@ const ContactSection = () => {
               <div>
                 <label style={labelStyle}>Message</label>
                 <textarea
-                  name="message" value={formData.message} onChange={handleChange}
-                  placeholder="Tell me about your project..."
+                  name="message" value={formData.message}
+                  onChange={handleChange} placeholder="Tell me about your project..."
                   rows={4}
                   onFocus={() => setFocused('message')} onBlur={() => setFocused(null)}
                   style={{ ...inputStyle('message'), resize: 'none' }}
@@ -223,21 +248,20 @@ const ContactSection = () => {
 
               {/* Submit */}
               <motion.button
-                type="submit"
-                disabled={isSubmitting}
+                type="submit" disabled={isSubmitting}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 12,
-                  background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                  background: 'none', border: 'none', cursor: isSubmitting ? 'not-allowed' : 'pointer', padding: 0,
                 }}
-                whileHover={{ x: 4 }}
+                whileHover={{ x: isSubmitting ? 0 : 4 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 28 }}
               >
                 <span style={{
                   width: 44, height: 44, borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: t.btnBg, color: t.btnText,
-                  transition: 'background 0.3s, color 0.3s, transform 0.2s',
-                  flexShrink: 0,
+                  background: t.btnBg, color: t.btnText, flexShrink: 0,
+                  opacity: isSubmitting ? 0.6 : 1,
+                  transition: 'background 0.3s, color 0.3s, opacity 0.2s',
                 }}>
                   {isSubmitting
                     ? <svg style={{ animation: 'spin 1s linear infinite' }} width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -260,7 +284,6 @@ const ContactSection = () => {
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
           >
-
             {/* Email */}
             <div>
               <p style={{ ...labelStyle, marginBottom: 8 }}>Email</p>

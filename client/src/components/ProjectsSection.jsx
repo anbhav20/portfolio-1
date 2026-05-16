@@ -2,9 +2,32 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 import { useTheme } from './ThemeProvider';
 
-const projects = [
+ const projects = [
+ 
   {
     id: 1, index: '01',
+    title: 'F.R.I.D.A.Y',
+    subtitle: 'AI · LangChain · Multi-Provider',
+    description: 'A Perplexity-style AI assistant with real-time web search, multi-provider fallback (Groq, Gemini, Mistral), weather, and smart query routing — built from scratch.',
+    imageUrl: '/assets/images/projects/friday.png',
+    link: 'https://f-r-i-d-a-y-puce.vercel.app/login',
+    sourceCodeLink: 'https://github.com/anbhav20/F.R.I.D.A.Y',
+    tags: ['React', 'Node.js', 'LangChain', 'Groq', 'Gemini', 'Tavily', 'MongoDB'],
+    color: '#f59e0b', emoji: '🤖',
+  },
+  {
+    id: 2, index: '02',
+    title: 'CityFriend',
+    subtitle: 'Real-time · Socket.io · Social',
+    description: 'A social platform to connect with people in your city, share posts and chat in real-time.',
+    imageUrl: '/assets/images/projects/cityfriendhome.png',
+    link: 'https://city-friend.vercel.app',
+    sourceCodeLink: 'https://github.com/anbhav20/cityfriend',
+    tags: ['React', 'Node.js', 'Express.js', 'MongoDB', 'Socket.io'],
+    color: '#8b5cf6', emoji: '🌆',
+  },
+   {
+    id: 3, index: '03',
     title: 'Movie Recommendation',
     subtitle: 'ML · Flask · TMDB API',
     description: 'Search for movies, get ML-powered recommendations, view trailers and check OTT availability in real-time.',
@@ -13,29 +36,7 @@ const projects = [
     sourceCodeLink: 'https://github.com/anbhav20/Movie-Recommendation-ML-2',
     tags: ['Flask', 'Python', 'JavaScript', 'Tailwind CSS', 'TMDB API', 'Machine Learning'],
     color: '#3b82f6', emoji: '🎬',
-  },
-  {
-    id: 2, index: '02',
-    title: 'Notes App',
-    subtitle: 'MERN · Full Stack',
-    description: 'A full-stack CRUD notes application — create, edit, organize and manage notes with a clean UI.',
-    imageUrl: '/assets/images/projects/notes.png',
-    link: 'https://notes-crud-fullstack.onrender.com/',
-    sourceCodeLink: 'https://github.com/anbhav20/notes-crud-fullstack',
-    tags: ['React', 'Node.js', 'Express.js', 'MongoDB', 'JavaScript'],
-    color: '#10b981', emoji: '📝',
-  },
-  {
-    id: 3, index: '03',
-    title: 'CityFriend',
-    subtitle: 'Real-time · Socket.io · Social',
-    description: 'A social platform to connect with people in your city, share posts and chat in real-time.',
-    imageUrl: '/assets/images/projects/cityfriend.png',
-    link: 'https://city-friend.vercel.app',
-    sourceCodeLink: 'https://github.com/anbhav20/cityfriend',
-    tags: ['React', 'Node.js', 'Express.js', 'MongoDB', 'Socket.io'],
-    color: '#8b5cf6', emoji: '🌆',
-  },
+  }
 ];
 
 const DECK_SIZE = 5;
